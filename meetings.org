@@ -1,0 +1,20 @@
+* DONE Meeting with Dr Amber
+SCHEDULED: <2020-04-23 Thu>
+:LOGBOOK:
+- State "WAITING"    from "NEXT"       [2020-04-23 Thu 13:54] \\
+  In progress
+- State "DONE"       from "WAITING"    [2020-04-23 Thu 14:18]
+:END:
+
+Participants:
+- Dr Ityonna Amber
+- Vi Kumar
+
+* TODO Meeting
+SCHEDULED: <2020-04-27 Mon 13:00>
+
+Participants:
+- Dr Ityonna Amber
+- Dr Mehdi Nazarinia
+- Sherrif Abdullah
+- Vi Kumar
