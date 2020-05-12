@@ -1,0 +1,4 @@
+* Need to get team members to set up git and get used to it.
+* Need to get real-life data for stuff
+* Nede to copy equations of motion from hastily written notes to an actual file
+* Need to also add a real simple Simulink implementation of the statespace model you're using. Need some controlability analysis
