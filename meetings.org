@@ -1,4 +1,5 @@
-* DONE Meeting with Dr Amber
+* Meetings
+** DONE Meeting with Dr Amber
 SCHEDULED: <2020-04-23 Thu>
 :LOGBOOK:
 - State "WAITING"    from "NEXT"       [2020-04-23 Thu 13:54] \\
@@ -10,11 +11,390 @@ Participants:
 - Dr Ityonna Amber
 - Vi Kumar
 
-* TODO Meeting
+** DONE Meeting
 SCHEDULED: <2020-04-27 Mon 13:00>
+:LOGBOOK:
+- State "WAITING"    from "NEXT"       [2020-04-26 Sun 12:52]
+- State "DONE"       from "WAITING"    [2020-04-26 Sun 13:49]
+:END:
 
 Participants:
 - Dr Ityonna Amber
 - Dr Mehdi Nazarinia
 - Sherrif Abdullah
 - Vi Kumar
+
+Little more than second year knowledge required but should be fun.
+Control Scheme is hardest part BUT that's the crux of the competition.
+
+*** Action items summary
+- Finish Onramp training and get software installed and ready
+- Lookup previous years drones and results
+  - Research about drone line-followers would be nice
+- Background Research on Control Theory
+  - Definitely a bit on the practical side since trusting EEs to make theory simple is a bad move.
+
+** TODO Meeting
+SCHEDULED: <2020-05-04 Mon 13:00>
+
+Participants:
+- Dr Ityonna Amber
+- Dr Mehdi Nazarinia
+- Sherrif Abdullah
+- Vi Kumar
+
+Decide then whether to have weekly or biweekly meetings
+
+* Competition :slide:
+Email: roboticsarena@mathworks.com
+
+Round 1 - Simulation in Simulink
+Round 2 - Deployment Round on Parrot Mambo Minidrone
+
+** Timeline :slide:
+
+| Competition launch             | 03 Feb 2020            |
+| Round 1 application closure    | 06 July 2020, 6 PM BST |
+| Round 1 submission             | 27 July 2020           |
+| Round 1 result declaration     | 01 Sept 2020           |
+| Round 2 live event and winners | 01 Oct 2020            |
+
+*** Submit application
+SCHEDULED: <2020-06-03 Wed>
+Should be as simple as sending in a list of names.
+
+*** Round 1 - Simulation in Simulink
+SCHEDULED: <2020-06-27 Sat>
+
+Simulink model is submitted.
+
+Submitted models are graded on:
+- Accuracy of the traced path
+- Time taken to complete track
+- Successful landing on end marker
+- NOTE Code generation is required.
+- NOTE Multiple evaluation passes are done by Mathworks Engineers
+
+*** Round 2 - Deployment Round
+SCHEDULED: <2020-09-01>
+
+<2020-04-26 Sun>
+Somewhat uncertain due to the whole coronavirus lockdown.
+Probably going to be a virtual thing. ~Dr Mehdi
+
+Practice Round
+- not evaluated
+- two slots of 15 minutes
+- Calibrate and test algorithms
+
+Live Round
+- one 15-minute slot
+- Seven chances to run the hardware
+- Nomination of one chance.
+- Graded based on number of track sections completed.
+- Judges decide which stages are considered complete.
+
+** Software Requirements :slide:
+  - Latest version of Matlab
+  - Optional Simulink OnRamp
+  - Simulink Package for ParrotDrone
+    - Allows you to deploy simulink models to Parrot Drone
+
+*** TODO OnRamp Online Courses
+SCHEDULED: <2020-04-28 Tue> DEADLINE: <2020-04-30 Thu>
+
+Finish it for the minimum training required for the competition.
+- Matlab Onramp
+- Simulink Onramp
+- Stateflow Onramp
+
+Work w/ Abdullah on this. Should be doable by next meeting.
+Definitely need to keep track of it.
+
+*** WAITING Simulink Package Configuration
+:LOGBOOK:
+- State "WAITING"    from "NEXT"       [2020-04-26 Sun 13:50] \\
+  Kinda done already and any real changes to it should be part of other TODO tasks.
+:END:
+
+Bluetooth issues for Windows (Send the online help page to Dr Mehdi)
+Hardware Deployment Issues
+
+NOTE: Need to try simulation before actually figuring hardware issues
+
+** TODO Control Schemes
+with drone context
+
+Work w/ Abdullah on this.
+Need to make a plan for next steps.
+
+** DONE Create a Microsoft Teams group
+:PROPERTIES:
+:SUMMARY:  Done by Dr Amber
+:END:
+:LOGBOOK:
+- State "WAITING"    from "NEXT"       [2020-04-26 Sun 13:42] \\
+  Wait and then finish
+- State "DONE"       from "WAITING"    [2020-05-05 Tue 21:19]
+:END:
+
+*** DONE Upload some basic information about the competition
+:LOGBOOK:
+- State "DONE"       from "NEXT"       [2020-05-05 Tue 21:19]
+:END:
+Competition rules and this doc.
+** Mission objective :slide:
+
+- Take off from a circular pad
+- Follow a track laid on floor
+  - Track sections have straight lines with no curves
+  - Downward facing camera to track lines
+- Land on circular end marker
+
+  Time considered only when the minidrone lands on the end marker.
+  In order for the minidrone to be considered as having landed:
+  - Minidrone must be upright.
+  - Minidrone's bottom surface has to touch the floor.
+  [[file:./images/screenshot-01.png]]
+
+* Parrot Mambo Drone General info :slide:
+# All data taken from Parrot drone website
+** Miscellaneous
+*** Energy
+660mAh LiPo Battery
+8 min autonomy with accessory connected or bumpers
+10 min autonomy with neither accessory nor bumpers
+30 min charging time with a 2,1A charger
+
+*** SDK
+SDK: OS Linux. SDK available on Parrot.com
+We might find documentation useful, especially if the Simulink model neglects to mention something.
+
+** Sensors
+*** Stabilization sensors :
+        Inertial Measurement Unit to evaluate speed, tilt and obstacle contact (3-axis accelerometer and 3-axis gyroscope)
+        Ultrasound sensor
+        Pressure sensor
+        Camera sensor
+
+*** Speed measurement :
+        60 FPS vertical camera
+        120x160 pixel resolution
+        Ultrasound sensor
+
+*** Streaming Camera
+Streaming and Recording HD 720p 30 FPS
+FOV 120°
+[[file:./images/screenshot-02.png]]i
+# https://www.parrot.com/global/drones/parrot-mambo-fpv
+
+[[file:./images/screenshot-03.png]]
+# https://www.parrot.com/global/drones/parrot-mambo-fpv
+
+** Physical Characteristics
+Need to get a MoI matrix from this
+*** Weight :
+        Weight: 2.22 oz / 63g (without bumpers or accessories)
+        Weight with Camera: 73g
+*** Dimensions
+        7.1 x 7.1 in. / 18 x 18 cm with Bumpers
+*** Rotor Characteristics
+
+[[file:./images/screenshot-04.png]]
+# https://www.mathworks.com/help/aeroblks/quadcopter-project.html
+
+Right-hand Coordinate Frame centered at Center of gravity.
+
+Rotor #1 rotates positively with respect to the z-axis. It is located parallel to the xy-plane, -45 degrees from the x-axis.
+
+Rotor #2 rotates negatively with respect to the body's z-axis. It is located parallel to the xy-plane, -135 degrees from the x-axis.
+
+Rotor #3 has the same rotation direction as rotor #1. It is located parallel to the xy-plane, 135 degrees from the x-axis.
+
+Rotor #4 has the same rotation direction as rotor #2. It is located parallel to the xy-plane, 45 degrees from the x-axis.
+
+* [#A] Control :slide:
+** [#A] Simulink Model Description
+
+- flight Control system
+- Image processing
+    - Loads of OpenCV-like filters
+    - Rate Transition since control system runs faster than image processing
+      - Any way to create multiple buffers for image processing?
+        This would allow much better "time resolution"
+- Drone Controller
+  - Real-time measurement
+- Control path planning algorithm
+
+*** TODO Sensor Filter
+Extended Kalman Feedback is what I'm familiar with BUT
+  - it's a linear filter, how does it deal with a drone's non-linearities?
+    Kalman filters assume Gaussian noise on "true" values that are linear-ish
+    How accurate is this model?
+  - Is it even worthwhile to bother with it is a simpler scheme works?
+**** TODO How to use vision-based feedback in the correction step?
+Vision-based odometry is apparently a thing for drones.
+
+Contact Dr Mehdi & Dr Tadhg for vision processing and path planning. ~Dr Amber
+
+Definitely need to figure out how to use the data after we've manipulated the raw data from the drone camera.
+
+*** TODO Control Schemes
+To be researched. But really need value judgements from a human.
+
+- PID
+- Fuzzy PID
+- LQR
+- LQG/LTR
+- H-infinity
+- Loop Shaping
+- MPC
+
+Perhaps a silly question, can we improve upon a previous run for a given track?
+How can we use existing data to contruct a "true-er" model from a previous run (especially at section junction)
+
+** [#B] Sensor Hardware & Related thoughts
+*** Inertial Measurement Unit (IMU)
+Inertial Measurement Unit to evaluate speed, tilt and obstacle contact
+- 3-axis accelerometer
+- 3-axis gyroscope
+
+Definitely need to get accurate specs for this.
+The Parrot AR Drone had pretty good IMU chips so pretty sure that even a "low-cost" model should have something with:
+- accelerometer +-2g
+- Bandwidth ~1000Hz
+- Low cross-axis misalignment
+
+Not sure how Mathworks's Simulink package deals with the hardware flags but should be interesting to see.
+
+**** Accelerometer Characterization
+- Bias factor
+- Scale factor
+- Thermal drift (check if it's relevant? Should be a simple correction)
+
+*** Downward facing Camera
+60 FPS vertical camera
+120x160 pixel resolution
+
+Located near COG and next to the ultrasound sensor.
+
+- Do we need to worry about the actual picture being distorted?
+  OpenCV has a little camera calibration thingy that takes care of camera distortion.
+  A chessboard pattern? Something similar here would be sweet.
+
+- How do we detect the red path and convert it to a line path?
+  More of a question for the control scheme but should keep in mind.
+
+**** How to do the binary switch for on-off image processing
+
+canny edge to hough processing
+
+canny edge to hough processing
+
+do it for submission
+
+move towards code that focuses on deviation from the center.
+
+Ask Dr Mehdi for help with Mathworks documentations
+
+
+* Image processing summary
+
+canny edge > hough transform
+
+inaccuracy in the image or just plain ol' reliability
+
+Also need to figure out if there are better methods out there.
+
+test suite of red track on carpet.
+
+Spepd of camera and te type of communication for the same
+
+FPV camera to predict future paths as well
+
+* Application
+
+- Code generation
+
+- Forth year and Third year examinations.
+- Sample images from Dr Mehsi after that.
+
+- 17th Sunday
+
+
+
+* File settings :noexport:
+
+#+BEGIN_SRC emacs-lisp
+(defvar my/org-show-presentation-file "/home/grokkingstuff/Scratchpad/MathWorksMiniDrone/meeting.org" "File containing the presentation.")
+(defvar my/org-show-slide-tag "slide" "Tag that marks slides.")
+(defvar my/org-show-slide-tag-regexp (concat ":" (regexp-quote my/org-show-slide-tag) ":"))
+(require 'eimp)
+
+;; From org-pres--eimp-fit
+(defun my/org-show-eimp-fit ()
+  "Function used as a hook, fits the image found to the window."
+  (when (eq major-mode 'image-mode)
+    (eimp-fit-image-to-window nil)))
+(add-hook 'find-file-hook 'my/org-show-eimp-fit)
+
+(defun my/org-show-execute-slide ()
+  "Process slide at point.
+  If it contains an Emacs Lisp source block, evaluate it.
+  If it contains an image, view it and switch to that buffer.
+  Else, focus on that buffer.
+  Hide all drawers."
+  (interactive)
+  (find-file my/org-show-presentation-file)
+  (org-narrow-to-subtree)
+  (visual-line-mode)
+  (let ((heading-text (nth 4 (org-heading-components))))
+    (cond
+     ;; view images
+     ((and (goto-char (point-min))
+           (re-search-forward "\\[\\[.*\\.\\(jpg\\|gif\\|png\\)" nil t))
+      (delete-other-windows)
+      (let ((org-link-frame-setup '((file . find-file))))
+        (org-open-at-point))
+      (delete-other-windows)
+      (goto-char (point-min)))
+     ;; find and execute source code blocks
+     ((and (goto-char (point-min))
+           (re-search-forward "#\\+begin_src" nil t))
+      (let ((info (org-babel-get-src-block-info)))
+        (unwind-protect
+            (eval (read (concat "(progn " (nth 1 info) ")"))))))
+     (t
+      (switch-to-buffer (current-buffer))
+      (text-scale-set 4)
+      (org-show-subtree)
+      (org-cycle-hide-drawers t)
+      (org-display-inline-images)
+      (delete-other-windows)))
+    (set-frame-name heading-text)))
+
+(defun my/org-show-next-slide ()
+  "Show the next slide."
+  (interactive)
+  (find-file my/org-show-presentation-file)
+  (widen)
+  (goto-char (line-end-position))
+  (when (re-search-forward my/org-show-slide-tag-regexp nil t)
+    (my/org-show-execute-slide)))
+
+(defun my/org-show-previous-slide ()
+  "Show the next slide."
+  (interactive)
+  (find-file my/org-show-presentation-file)
+  (widen)
+  (goto-char (line-beginning-position))
+  (when (re-search-backward my/org-show-slide-tag-regexp nil t)
+    (my/org-show-execute-slide)))
+
+(global-set-key '[f5] 'my/org-show-previous-slide)
+(global-set-key '[f6] 'my/org-show-execute-slide)
+(global-set-key '[f7] 'my/org-show-next-slide)
+#+END_SRC
+
+#+RESULTS:
+: my/org-show-next-slide
