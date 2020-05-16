@@ -1,0 +1,78 @@
+#+TITLE: Parrot Mambo Drone Info :slide:
+#+AUTHOR: All data taken from Parrot drone website
+
+Mostly information on what sensor information we have and as a way to document stuff.
+
+* Inertial Measurement Unit
+Inertial Measurement Unit to evaluate speed, tilt and obstacle contact
+- 3-axis accelerometer
+- 3-axis gyroscope
+
+Definitely need to get accurate specs for this.
+The Parrot AR Drone had pretty good IMU chips so pretty sure that even a "low-cost" model should have something with:
+- accelerometer +-2g
+- Bandwidth ~1000Hz
+- Low cross-axis misalignment
+
+Not sure how Mathworks's Simulink package deals with the hardware flags but should be interesting to see.
+
+** Accelerometer Characterization
+- Bias factor
+- Scale factor
+- Thermal drift (check if it's relevant? Should be a simple correction)
+
+* Downward facing camera
+
+  60 FPS vertical camera
+  120x160 pixel resolution
+  Ultrasound sensor
+
+- Do we need to worry about the actual picture being distorted?
+  OpenCV has a little camera calibration thingy that takes care of camera distortion.
+  A chessboard pattern? Something similar here would be sweet.
+
+* Ultrasound sensor
+
+Useful in determining altitude over a horizontal surface but susceptible to absorption by carpet. Calibrate before trusting.
+
+Might actually be useless? Maybe useful in determing relative distance off the ground and as a way to not have to rely on the downward facing camera while landing.
+
+* Pressure sensor
+  As of right now, deemed to be useless!
+
+* Streaming Camera
+
+Streaming and Recording HD 720p 30 FPS
+FOV 120°
+
+* Physical Characteristics
+Need to get a MoI matrix from this
+** Weight
+Weight: 2.22 oz / 63g (without bumpers or accessories)
+Weight with Camera: 73g
+** Dimensions
+7.1 x 7.1 in. / 18 x 18 cm with Bumpers
+** Rotor Characteristics
+
+[[file:./images/screenshot-04.png]]
+# https://www.mathworks.com/help/aeroblks/quadcopter-project.html
+
+Right-hand Coordinate Frame centered at Center of gravity.
+
+Rotor #1 rotates positively with respect to the z-axis. It is located parallel to the xy-plane, -45 degrees from the x-axis.
+
+Rotor #2 rotates negatively with respect to the body's z-axis. It is located parallel to the xy-plane, -135 degrees from the x-axis.
+
+Rotor #3 has the same rotation direction as rotor #1. It is located parallel to the xy-plane, 135 degrees from the x-axis.
+
+Rotor #4 has the same rotation direction as rotor #2. It is located parallel to the xy-plane, 45 degrees from the x-axis.
+* Miscellaneous
+** Energy
+660mAh LiPo Battery
+8 min autonomy with accessory connected or bumpers
+10 min autonomy with neither accessory nor bumpers
+30 min charging time with a 2,1A charger
+
+** SDK
+SDK: OS Linux. SDK available on Parrot.com
+We might find documentation useful, especially if the Simulink model neglects to mention something.
