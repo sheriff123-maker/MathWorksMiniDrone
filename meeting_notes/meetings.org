@@ -297,7 +297,6 @@ move towards code that focuses on deviation from the center.
 
 Ask Dr Mehdi for help with Mathworks documentations
 
-
 * Image processing summary
 
 canny edge > hough transform
@@ -320,81 +319,3 @@ FPV camera to predict future paths as well
 - Sample images from Dr Mehsi after that.
 
 - 17th Sunday
-
-
-
-* File settings :noexport:
-
-#+BEGIN_SRC emacs-lisp
-(defvar my/org-show-presentation-file "/home/grokkingstuff/Scratchpad/MathWorksMiniDrone/meeting.org" "File containing the presentation.")
-(defvar my/org-show-slide-tag "slide" "Tag that marks slides.")
-(defvar my/org-show-slide-tag-regexp (concat ":" (regexp-quote my/org-show-slide-tag) ":"))
-(require 'eimp)
-
-;; From org-pres--eimp-fit
-(defun my/org-show-eimp-fit ()
-  "Function used as a hook, fits the image found to the window."
-  (when (eq major-mode 'image-mode)
-    (eimp-fit-image-to-window nil)))
-(add-hook 'find-file-hook 'my/org-show-eimp-fit)
-
-(defun my/org-show-execute-slide ()
-  "Process slide at point.
-  If it contains an Emacs Lisp source block, evaluate it.
-  If it contains an image, view it and switch to that buffer.
-  Else, focus on that buffer.
-  Hide all drawers."
-  (interactive)
-  (find-file my/org-show-presentation-file)
-  (org-narrow-to-subtree)
-  (visual-line-mode)
-  (let ((heading-text (nth 4 (org-heading-components))))
-    (cond
-     ;; view images
-     ((and (goto-char (point-min))
-           (re-search-forward "\\[\\[.*\\.\\(jpg\\|gif\\|png\\)" nil t))
-      (delete-other-windows)
-      (let ((org-link-frame-setup '((file . find-file))))
-        (org-open-at-point))
-      (delete-other-windows)
-      (goto-char (point-min)))
-     ;; find and execute source code blocks
-     ((and (goto-char (point-min))
-           (re-search-forward "#\\+begin_src" nil t))
-      (let ((info (org-babel-get-src-block-info)))
-        (unwind-protect
-            (eval (read (concat "(progn " (nth 1 info) ")"))))))
-     (t
-      (switch-to-buffer (current-buffer))
-      (text-scale-set 4)
-      (org-show-subtree)
-      (org-cycle-hide-drawers t)
-      (org-display-inline-images)
-      (delete-other-windows)))
-    (set-frame-name heading-text)))
-
-(defun my/org-show-next-slide ()
-  "Show the next slide."
-  (interactive)
-  (find-file my/org-show-presentation-file)
-  (widen)
-  (goto-char (line-end-position))
-  (when (re-search-forward my/org-show-slide-tag-regexp nil t)
-    (my/org-show-execute-slide)))
-
-(defun my/org-show-previous-slide ()
-  "Show the next slide."
-  (interactive)
-  (find-file my/org-show-presentation-file)
-  (widen)
-  (goto-char (line-beginning-position))
-  (when (re-search-backward my/org-show-slide-tag-regexp nil t)
-    (my/org-show-execute-slide)))
-
-(global-set-key '[f5] 'my/org-show-previous-slide)
-(global-set-key '[f6] 'my/org-show-execute-slide)
-(global-set-key '[f7] 'my/org-show-next-slide)
-#+END_SRC
-
-#+RESULTS:
-: my/org-show-next-slide
