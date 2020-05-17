@@ -1,0 +1,337 @@
+#+TITLE: Computer Vision Notes
+
+
+Loads of information over here - https://www.mathworks.com/products/computer-vision.html
+
+
+* Feature Detection & Description
+
+There is no universal or exact definition of what constitutes a feature, and the exact definition often depends on the problem or the type of application. Nevertheless, a feature is typically defined as an "interesting" part of an image, and features are used as a starting point for many computer vision algorithms.
+
+Since features are used as the starting point and main primitives for subsequent algorithms, *the overall algorithm will often only be as good as its feature detector*. Consequently, the desirable property for a feature detector is repeatability: whether or not the same feature will be detected in two or more different images of the same scene.
+
+Feature detection is a low-level image processing operation. That is, it is usually performed as the first operation on an image, and examines every pixel to see if there is a feature present at that pixel. If this is part of a larger algorithm, then the algorithm will typically only examine the image in the region of the features. As a built-in pre-requisite to feature detection, the input image is usually smoothed by a Gaussian kernel in a scale-space representation and one or several feature images are computed, often expressed in terms of local image derivatives operations.
+
+** Types of image features
+
+*** Edge detection
+
+Edges are points where there is a boundary (or an edge) between two image regions. In general, an edge can be of almost arbitrary shape, and may include junctions.
+
+Edge detection includes a variety of mathematical methods that aim at identifying points in a digital image at which the image brightness changes sharply or, more formally, has discontinuities. The points at which image brightness changes sharply are typically organized into a set of curved line segments termed edges.
+
+In practice, edges are usually defined as sets of points in the image which have a strong gradient magnitude. Furthermore, some common algorithms will then chain high gradient points together to form a more complete description of an edge. These algorithms usually place some constraints on the properties of an edge, such as shape, smoothness, and gradient value. Locally, edges have a one-dimensional structure.
+
+- Canny
+- Deriche
+- Differential
+- Sobel
+- Prewitt
+- Roberts cross
+
+*** Corners / interest points
+
+The terms corners and interest points are used somewhat interchangeably and refer to point-like features in an image, which have a local two dimensional structure. The name "Corner" arose since early algorithms first performed edge detection, and then analysed the edges to find rapid changes in direction (corners). These algorithms were then developed so that explicit edge detection was no longer required, for instance by looking for high levels of curvature in the image gradient. It was then noticed that the so-called corners were also being detected on parts of the image which were not corners in the traditional sense (for instance a small bright spot on a dark background may be detected). These points are frequently known as interest points, but the term "corner" is used by tradition[citation needed].
+
+**** FAST
+
+*** Blobs / regions of interest points
+
+Blobs provide a complementary description of image structures in terms of regions, as opposed to corners that are more point-like. Nevertheless, blob descriptors may often contain a preferred point (a local maximum of an operator response or a center of gravity) which means that many blob detectors may also be regarded as interest point operators. Blob detectors can detect areas in an image which are too smooth to be detected by a corner detector.
+
+Consider shrinking an image and then performing corner detection. The detector will respond to points which are sharp in the shrunk image, but may be smooth in the original image. It is at this point that the difference between a corner detector and a blob detector becomes somewhat vague. To a large extent, this distinction can be remedied by including an appropriate notion of scale. Nevertheless, due to their response properties to different types of image structures at different scales, the LoG and DoH blob detectors are also mentioned in the article on corner detection.
+
+*** Ridges
+For elongated objects, the notion of ridges is a natural tool. A ridge descriptor computed from a grey-level image can be seen as a generalization of a medial axis. From a practical viewpoint, a ridge can be thought of as a one-dimensional curve that represents an axis of symmetry, and in addition has an attribute of local ridge width associated with each ridge point. Unfortunately, however, it is algorithmically harder to extract ridge features from general classes of grey-level images than edge-, corner- or blob features. Nevertheless, ridge descriptors are frequently used for road extraction in aerial images and for extracting blood vessels in medical images—see ridge detection.
+
+**** SURF
+
+In computer vision, speeded up robust features (SURF) is a patented local feature detector and descriptor. It can be used for tasks such as object recognition, image registration, classification, or 3D reconstruction. It is partly inspired by the scale-invariant feature transform (SIFT) descriptor. The standard version of SURF is several times faster than SIFT and claimed by its authors to be more robust against different image transformations than SIFT.
+
+The algorithm has three main parts: interest point detection, local neighborhood description, and matching.
+**** Harris
+** MSER
+** BRISK
+** KAZE
+** ORB
+Class implementing the ORB (oriented BRIEF) keypoint detector and descriptor extractor, described in [RRKB11]. The algorithm uses FAST in pyramids to detect stable keypoints, selects the strongest features using FAST or Harris response, finds their orientation using first-order moments and computes the descriptors using BRIEF (where the coordinates of random point pairs (or k-tuples) are rotated according to the measured orientation).
+
+[RRKB11]	Ethan Rublee, Vincent Rabaud, Kurt Konolige, Gary R. Bradski: ORB: An efficient alternative to SIFT or SURF. ICCV 2011: 2564-2571.
+FREAK
+
+** FREAK
+
+Class implementing the FREAK (Fast Retina Keypoint) keypoint descriptor, described in [AOV12]. The algorithm propose a novel keypoint descriptor inspired by the human visual system and more precisely the retina, coined Fast Retina Key- point (FREAK). A cascade of binary strings is computed by efficiently comparing image intensities over a retinal sampling pattern. FREAKs are in general faster to compute with lower memory load and also more robust than SIFT, SURF or BRISK. They are competitive alternatives to existing keypoints in particular for embedded applications.
+
+
+* vSLAM (specifically ORB-SLAM2)
+
+** What is vSLAM?
+
+#+CAPTION: From https://www.mathworks.com/help/vision/examples/monocular-visual-simultaneous-localization-and-mapping.html
+#+BEGIN_QUOTE
+Visual simultaneous localization and mapping (vSLAM), refers to the process of calculating the position and orientation of a camera with respect to its surroundings, while simultaneously mapping the environment. The process uses only visual inputs from the camera. Applications for vSLAM include augmented reality, robotics, and autonomous driving.
+#+END_QUOTE
+
+Slam algorithms are algorithms that simultaneously tracks the movement of the camera (usually mounted onto a robot/car/etc.) and create a point cloud map of the surroundings that they passed. They create a map of the surroundings and localize them self within this map. In particular, we'll be looking at monocular slam algorithms, where monocular means that they preform slam based on a rgb image sequence (video) created by 1 camera at each time-instance.
+
+NOTE: Monocular slam has has one big characteristic which provides it with a big pro but also a big con, it is scale independent. It cannot estimate the scale of the scenery and thus the precieved scale of the scenery will drift. This often is attempted to be fixed by trying to detect scenery that you already have been (you have traveled in a loop) and then the scale-drift can be estimated and corrected. This does bring the big pro that the algorithms work for big outdoor sceneries, small indoor sceneries and for transitions between these two.
+
+** Monocular slam algorithms
+
+Monocular slam algorithms can be divided into two groups, those who use feature-based methods and those who use direct methods:
+
+- Feature-based slam algorithms:
+  Feature-based slam algorithms take the images and within these images, they search for certain features, key-points, (for instance corners) and only use these features to estimate the location and surroundings. This means that they throw away a lot of positional valuable information from the image, but this does simplifies the whole process.
+
+- Direct slam algorithms:
+  Direct slam algorithms do not search the image for key-points but instead use the image intensities to estimate the location and surroundings. This does mean that they use more information from the images and thus tend to be robuster and create a more detailed map of the surrounding. However they do require a lot more computational costs.
+
+#+CAPTION: https://medium.com/@j.zijlmans/lsd-slam-vs-orb-slam2-a-literature-based-comparison-20732df431d
+[[file:./images/screenshot-01.png]]
+
+Given that we're trying to use a track that could be described by a bunch of edges, we'll be looking at feature-based algorithms. Note to self: Should really add an explanation why the lack of features on the carpet means that optical flow is terrible when trying to detect features on it. Doing a direct SLAM is really a much more computationaly intensive (and less robust) way of doing a feature based. And it's so much easier to reason about a good feature detecter.
+
+* ORB-slam2
+
+# based on: http://ieeexplore.ieee.org/document/7219438/?part=1 and https://arxiv.org/abs/1610.06475
+
+ORB-slam2 is more feature based, and uses ORB features because of the speed in which these can be extracted from images and there rotational invariance.
+
+#+CAPTION: Overview of ORB-SLAM2 algorithm
+[[file:./images/screenshot-02.png]]
+
+The algorithms works on three threads, a tracking thread, a local mapping thread and a loop closing thread.
+
+** Initializing the map
+
+To initialize the map starting by computing the relative pose between two scenes, they compute two geometrical models in parallel, one for a planar scene, a homography and one for non-planar scenes, a fundamental matrix. They then choose one of both based on a relative score of both. Using the selected model they estimate multiple motion hypotheses and en see if one is significantly better then the others, if so, a full bundle adjustment is done, otherwise the initialization starts over.
+
+** Tracking
+
+The tracking part localizes the camera and decides when to insert a new keyframe. Features are matched with the previous frame and the pose is optimized using motion-only bundle adjustment. The features extracted are FAST corners. (for res. till 752x480, 1000 corners should be good, for higher (KITTI 1241x376) 2000 corners works). Multiple scale-levels (factor 1.2) are used and each level is divided into a grid in which 5 corners per cell are attempted to be extracted. These FAST corners are then described using ORB. The initial pose is estimated using a constant velocity motion model. If the tracking is lost, the place recognition module kicks in and tries to re-localize itself. When there is an estimation of the pose and feature matches, the co-visibility graph of keyframes, that is maintained by the system, is used to get a local visible map. This local map consists of keyframes that share map point with the current frame, the neighbors of these keyframes and a reference keyframe which share the most map points with the current frame. Through re-projection, matches of the local map are searched on the frame and the camera pose is optimized using these matches. Finally is decided if a new Keyframe needs to be created, new keyframes are inserted very frequently to make tracking more robust. A new keyframe is created when at least 20 frames has passed from the last keyframe, and last global re-localization, the frame tracks at least 50 points of which less then 90% are point from the reference keyframe.
+
+** Local mapping
+
+First the new keyframe is inserted into the covisibility graph, the spanning tree linking a keyframe to the keyframe with the most points in common, and a 'bag of words' representation of the keyframe (used for data association for triangulating new points) is created.
+
+New map points are created by triangulating ORB from connected keyframes in the covisibility graph. The unmachted ORB in a keyframe are compared with other unmatched ORB in other keyframes. The match must fulfill the epipolare constraint to be valid. To be a match, the ORB pairs are triangulated and checked if in both frames they have a positive depth, and the parallax, re projection error and scale consistency is checked. Then the match is projected to other connected keyframes to check if it is also in these.
+
+The new map points first need to go through a test to increase the likelihood of these map points being valid. They need to be found in more than 25 % of the frames in which it is predicted to be visible and it must be observed by at least three keyframes.
+
+Then through local bundle adjustment, the current keyframe, all keyframes connected to it through the co-visibility graph and all the map points seen by these keyframes are optimized using the keyframes that do see the map points but are not connected to the current keyframe.
+
+Finally keyframes that are abundent are discarded to remain a certain simplicity. Keyframes from which more than 90 % of the map points can be seen by three other keyframes in the same scale-level are discarded.
+
+** Loop closing
+
+To detect possible loops, they check bag of words vectors of the current keyframe and its neighbors in the covisibitlity graph. The min. simularity of these bag of words vectors is taken as a benchmark and from all the keyframes with a bag of words simulatrity to the current key frame that is greater that this benchmark, all the keyframes that are allready connected to the current keyframe are removed. If three loop canditates that are consistant are detected consecutively, this loop is regarded as a serious candiddate.
+
+For these loops, the similarity transformation is calculated (7DOF, 3 trans, 3 rot, 1 scale) RANSAC itterations are prformed to find them and these are then optimized after which more correspondences are searched and then again an optimization is preformed. If the similarity is supported by having enough inlier's, the loop is accepted.
+
+The current keyframe pose in then adjusted and this is propagated to its neighbors and the corresponding map-points are fused. Finally a pose graph optimization is preformed over the essential graph to take out the loop closure created errors along the graph. This also corrects for scale drift.
+
+** Parameters
+
+** Glossary
+- Key Frames
+A subset of video frames that contain cues for localization and tracking. Two consecutive key frames usually involve sufficient visual change.
+
+- Map Points
+A list of 3-D points that represent the map of the environment reconstructed from the key frames.
+
+- Covisibility Graph
+A graph consisting of key frame as nodes. Two key frames are connected by an edge if they share common map points. The weight of an edge is the number of shared map points.
+
+- Essential Graph
+A subgraph of covisibility graph containing only edges with high weight, i.e. more shared map points.
+
+- Recognition Database
+A database used to recognize whether a place has been visited in the past. The database stores the visual word-to-image mapping based on the input bag of features. It is used to search for an image that is visually similar to a query image.
+
+* Computer Vision Toolbox
+
+** Feature Detection and Extraction
+| detectBRISKFeatures        | Detect BRISK features and return BRISKPoints object                              |
+| detectFASTFeatures         | Detect corners using FAST algorithm and return cornerPoints object               |
+| detectHarrisFeatures       | Detect corners using Harris–Stephens algorithm and return cornerPoints object    |
+| detectMinEigenFeatures     | Detect corners using minimum eigenvalue algorithm and return cornerPoints object |
+| detectMSERFeatures         | Detect MSER features and return MSERRegions object                               |
+| detectORBFeatures          | Detect and store ORB keypoints                                                   |
+| detectSURFFeatures         | Detect SURF features and return SURFPoints object                                |
+| detectKAZEFeatures         | Detect KAZE features                                                             |
+| extractFeatures            | Extract interest point descriptors                                               |
+| extractLBPFeatures         | Extract local binary pattern (LBP) features                                      |
+| extractHOGFeatures         | Extract histogram of oriented gradients (HOG) features                           |
+| matchFeatures              | Find matching features                                                           |
+| estimateGeometricTransform | Estimate geometric transform from matching point pairs                           |
+| vision.AlphaBlender        | Combine images, overlay images, or highlight selected pixels                     |
+| vision.LocalMaximaFinder   | Find local maxima in matrices                                                    |
+| vision.TemplateMatcher     | Locate template in image                                                         |
+| insertMarker               | Insert markers in image or video                                                 |
+| insertShape                | Insert shapes in image or video                                                  |
+| insertObjectAnnotation     | Annotate truecolor or grayscale image or video stream                            |
+| insertText                 | Insert text in image or video                                                    |
+| vision.GammaCorrector      | Apply or remove gamma correction from images or video streams                    |
+| vision.ChromaResampler     | Downsample or upsample chrominance components of images                          |
+| binaryFeatures             | Object for storing binary feature vectors                                        |
+| BRISKPoints                | Object for storing BRISK interest points                                         |
+| KAZEPoints                 | Object for storing KAZE interest points                                          |
+| cornerPoints               | Object for storing corner points                                                 |
+| SURFPoints                 | Object for storing SURF interest points                                          |
+| MSERRegions                | Object for storing MSER regions                                                  |
+| ORBPoints                  | Object for storing ORB keypoints                                                 |
+
+** Deep Learning, Semantic Segmentation, and Detection
+|Object| Detection using Deep Learning
+|bbox2points|	Convert rectangle to corner points list
+|bboxOverlapRatio|	Compute bounding box overlap ratio
+|selectStrongestBbox|	Select strongest bounding boxes from overlapping clusters
+|selectStrongestBboxMulticlass|	Select strongest multiclass bounding boxes from overlapping clusters
+|insertObjectAnnotation|	Annotate truecolor or grayscale image or video stream
+|insertShape|	Insert shapes in image or video
+
+** Object Detection Using Features
+| ocr                           | Recognize text using optical character recognition                               |
+| acfObjectDetector             | Detect objects using aggregate channel features                                  |
+| vision.CascadeObjectDetector  | Detect objects using the Viola-Jones algorithm                                   |
+| vision.ForegroundDetector     | Foreground detection using Gaussian mixture models                               |
+| vision.PeopleDetector         | Detect upright people using HOG features                                         |
+| vision.BlobAnalysis           | Properties of connected regions                                                  |
+| detectBRISKFeatures           | Detect BRISK features and return BRISKPoints object                              |
+| detectFASTFeatures            | Detect corners using FAST algorithm and return cornerPoints object               |
+| detectHarrisFeatures          | Detect corners using Harris–Stephens algorithm and return cornerPoints object    |
+| detectKAZEFeatures            | Detect KAZE features                                                             |
+| detectMinEigenFeatures        | Detect corners using minimum eigenvalue algorithm and return cornerPoints object |
+| detectMSERFeatures            | Detect MSER features and return MSERRegions object                               |
+| detectORBFeatures             | Detect and store ORB keypoints                                                   |
+| detectSURFFeatures            | Detect SURF features and return SURFPoints object                                |
+| extractFeatures               | Extract interest point descriptors                                               |
+| matchFeatures                 | Find matching features                                                           |
+| bbox2points                   | Convert rectangle to corner points list                                          |
+| bboxOverlapRatio              | Compute bounding box overlap ratio                                               |
+| selectStrongestBbox           | Select strongest bounding boxes from overlapping clusters                        |
+| selectStrongestBboxMulticlass | Select strongest multiclass bounding boxes from overlapping clusters             |
+
+** Optical Character Recognition (OCR)
+| ocr     | Recognize text using optical character recognition |
+| ocrText | Object for storing OCR results                     |
+
+** Camera Calibration and 3-D Vision
+
+*** Single and Stereo Camera Calibration
+| detectCheckerboardPoints   | Detect checkerboard pattern in image                           |
+| generateCheckerboardPoints | Generate checkerboard corner locations                         |
+| undistortImage             | Correct image for lens distortion                              |
+| cameraPoseToExtrinsics     | Convert camera pose to extrinsics                              |
+| cameraMatrix               | Camera projection matrix                                       |
+| cameraParameters           | Object for storing camera parameters                           |
+| stereoParameters           | Object for storing stereo camera system parameters             |
+| disparityBM                | Compute disparity map using block matching                     |
+| disparitySGM               | Compute disparity map through semi-global matching             |
+| reconstructScene           | Reconstruct 3-D scene from disparity map                       |
+| rectifyStereoImages        | Rectify a pair of stereo images                                |
+| triangulate                | 3-D locations of undistorted matching points in stereo images  |
+| extrinsics                 | Compute location of calibrated camera                          |
+| extrinsicsToCameraPose     | Convert extrinsics to camera pose                              |
+| relativeCameraPose         | Compute relative rotation and translation between camera poses |
+| stereoAnaglyph             | Create red-cyan anaglyph from stereo pair of images            |
+| rotationMatrixToVector     | Convert 3-D rotation matrix to rotation vector                 |
+| rotationVectorToMatrix     | Convert 3-D rotation vector to rotation matrix                 |
+
+*** Stereo Vision
+| triangulate                       | 3-D locations of undistorted matching points in stereo images |
+| undistortImage                    | Correct image for lens distortion                             |
+| cameraMatrix                      | Camera projection matrix                                      |
+| disparityBM                       | Compute disparity map using block matching                    |
+| disparitySGM                      | Compute disparity map through semi-global matching            |
+| estimateUncalibratedRectification | Uncalibrated stereo rectification                             |
+| lineToBorderPoints                | Intersection points of lines in image and image border        |
+| rectifyStereoImages               | Rectify a pair of stereo images                               |
+| reconstructScene                  | Reconstruct 3-D scene from disparity map                      |
+| stereoParameters                  | Object for storing stereo camera system parameters            |
+| stereoAnaglyph                    | Create red-cyan anaglyph from stereo pair of images           |
+| rotationMatrixToVector            | Convert 3-D rotation matrix to rotation vector                |
+| rotationVectorToMatrix            | Convert 3-D rotation vector to rotation matrix                |
+
+** Structure From Motion
+| cameraMatrix              | Camera projection matrix                                                         |
+| estimateEssentialMatrix   | Estimate essential matrix from corresponding points in a pair of images          |
+| estimateFundamentalMatrix | Estimate fundamental matrix from corresponding points in stereo images           |
+| estimateWorldCameraPose   | Estimate camera pose from 3-D to 2-D point correspondences                       |
+| relativeCameraPose        | Compute relative rotation and translation between camera poses                   |
+| triangulate               | 3-D locations of undistorted matching points in stereo images                    |
+| detectBRISKFeatures       | Detect BRISK features and return BRISKPoints object                              |
+| detectFASTFeatures        | Detect corners using FAST algorithm and return cornerPoints object               |
+| detectHarrisFeatures      | Detect corners using Harris–Stephens algorithm and return cornerPoints object    |
+| detectMinEigenFeatures    | Detect corners using minimum eigenvalue algorithm and return cornerPoints object |
+| detectMSERFeatures        | Detect MSER features and return MSERRegions object                               |
+| detectSURFFeatures        | Detect SURF features and return SURFPoints object                                |
+| extractFeatures           | Extract interest point descriptors                                               |
+| extractHOGFeatures        | Extract histogram of oriented gradients (HOG) features                           |
+| matchFeatures             | Find matching features                                                           |
+| vision.PointTracker       | Track points in video using Kanade-Lucas-Tomasi (KLT) algorithm                  |
+| stereoAnaglyph            | Create red-cyan anaglyph from stereo pair of images                              |
+| rotationMatrixToVector    | Convert 3-D rotation matrix to rotation vector                                   |
+| rotationVectorToMatrix    | Convert 3-D rotation vector to rotation matrix                                   |
+
+** Lidar and Point Cloud Processing
+| pcdenoise                  | Remove noise from 3-D point cloud                             |
+| pcdownsample               | Downsample a 3-D point cloud                                  |
+| pcnormals                  | Estimate normals for point cloud                              |
+| pcmerge                    | Merge two 3-D point clouds                                    |
+| pcsegdist                  | Segment point cloud into clusters based on Euclidean distance |
+| segmentLidarData           | Segment organized 3-D range data into clusters                |
+| segmentGroundFromLidarData | Segment ground points from organized lidar data               |
+| findNearestNeighbors       | Find nearest neighbors of a point in point cloud              |
+| findNeighborsInRadius      | Find neighbors within a radius of a point in the point cloud  |
+| findPointsInROI            | Find points within a region of interest in the point cloud    |
+| removeInvalidPoints        | Remove invalid points from point cloud                        |
+| pcdownsample               | Downsample a 3-D point cloud                                  |
+| pctransform                | Transform 3-D point cloud                                     |
+| pcregistercpd              | Register two point clouds using CPD algorithm                 |
+| pcregisterndt              | Register two point clouds using NDT algorithm                 |
+| pcfitcylinder              | Fit cylinder to 3-D point cloud                               |
+| pcfitplane                 | Fit plane to 3-D point cloud                                  |
+| pcfitsphere                | Fit sphere to 3-D point cloud                                 |
+| pcnormals                  | Estimate normals for point cloud                              |
+| pointCloud                 | Object for storing 3-D point cloud                            |
+| findNearestNeighbors       | Find nearest neighbors of a point in point cloud              |
+| findNeighborsInRadius      | Find neighbors within a radius of a point in the point cloud  |
+| findPointsInROI            | Find points within a region of interest in the point cloud    |
+
+** Tracking and Motion Estimation
+| vision.DeployableVideoPlayer | Display video                                                                       |
+| vision.VideoFileReader       | Read video frames and audio samples from video file                                 |
+| vision.VideoFileWriter       | Write video frames and audio samples to video file                                  |
+| assignDetectionsToTracks     | Assign detections to tracks for multiobject tracking                                |
+| vision.KalmanFilter          | Correction of measurement, state, and state estimation error covariance             |
+| vision.HistogramBasedTracker | Histogram-based object tracking                                                     |
+| vision.PointTracker          | Track points in video using Kanade-Lucas-Tomasi (KLT) algorithm                     |
+| vision.TemplateMatcher       | Locate template in image                                                            |
+| opticalFlow                  | Object for storing optical flow matrices                                            |
+| opticalFlowFarneback         | Object for estimating optical flow using Farneback method                           |
+| opticalFlowHS                | Object for estimating optical flow using Horn-Schunck method                        |
+| opticalFlowLK                | Object for estimating optical flow using Lucas-Kanade method                        |
+| opticalFlowLKDoG             | Object for estimating optical flow using Lucas-Kanade derivative of Gaussian method |
+| vision.TemplateMatcher       | Locate template in image                                                            |
+| insertMarker                 | Insert markers in image or video                                                    |
+| insertShape                  | Insert shapes in image or video                                                     |
+| insertObjectAnnotation       | Annotate truecolor or grayscale image or video stream                               |
+| insertText                   | Insert text in image or video                                                       |
+* Code Generation and Third-Party Support
+# https://www.mathworks.com/help/vision/code-generation-and-third-party-support-1.html?s_tid=CRUX_lftnav
+
+To generate ANSI/ISO C from the algorithms in this toolbox, use MATLAB Coder™, Simulink Coder™, or Embedded Coder™.
+
+The Computer Vision Toolbox™ provides an OpenCV Interface C++ API and an OCR language data files support package. Use the API for integrating OpenCV C++ code into MATLAB®. You can also use this support package to build MEX-files that call OpenCV functions. The support package also contains graphics processing unit (GPU) support. The OCR Language Data support package contains pretrained language data files from the OCR Engine page, tesseract-ocr, to use with the ocr function.
+
+* Computer Calibration
+
+Camera calibration is the process of estimating parameters of the camera using images of a special calibration pattern.
+The parameters include camera intrinsics, distortion coefficients, and camera extrinsics.
+3-D vision is the process of reconstructing a 3-D scene from two or more views of the scene.
+
+Using the Computer Vision Toolbox™, you can perform dense 3-D reconstruction using a calibrated stereo pair of cameras.
+You can also reconstruct the scene using an uncalibrated stereo pair of cameras, up to unknown scale.
+Finally, you can compute a sparse 3-D reconstruction from multiple images, using a single-calibrated camera.
