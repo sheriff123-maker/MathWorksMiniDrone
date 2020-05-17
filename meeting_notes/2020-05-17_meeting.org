@@ -54,12 +54,10 @@
 - Vishnu Sarathy
   Third Year EleE
 
-* DONE Agenda
+* Agenda
 :LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
+- State "DONE"       from "TODO"       [2020-05-17 Sun 14:27]
 :END:
-=======
-* TODO Agenda
 
 \section*{Agenda}
 \begin{itemize}
@@ -68,9 +66,7 @@
   \item Action items
 \end{itemize}
 
-\tasklist
-
-* DONE Housekeeping & Onboarding
+* Housekeeping & Onboarding
 :LOGBOOK:
 - State "DONE"       from "NEXT"       [2020-05-17 Sun 13:34]
 - State "DONE"       from "DONE"       [2020-05-17 Sun 13:35]
@@ -94,11 +90,11 @@ git push origin master
 Our repo: https://gitlab.com/grokkingStuff/MathWorksMiniDrone
 #+END_SRC
 
-* DONE Current Status of Project
+* Current Status of Project
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
 :END:
-** DONE Mission Timeline
+** Mission Timeline
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 13:57]
 :END:
@@ -110,9 +106,7 @@ Our repo: https://gitlab.com/grokkingStuff/MathWorksMiniDrone
   Work w/ Vishnu & Sheriff on this ASAP
 
 *** Time consideration?
-=======
 Time consideration?
->>>>>>> simulink
 Time considered only when the minidrone lands on the end marker.
 
 In order for the minidrone to be considered as having landed:
@@ -120,7 +114,10 @@ In order for the minidrone to be considered as having landed:
  - Minidrone's bottom surface has to touch the floor.
 [[file:./images/screenshot-01.png]]
 
-** TODO General Software Stack
+** General Software Stack
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 14:30]
+:END:
 
 Work off ROS inside Simulink.
 
@@ -130,7 +127,7 @@ Plenty of existing models in ROS that are industry-tested. Also, it's usually be
 - So why Simulink?
 The control logic is best expressed in Simulink because writing C code that has a decent state machine AND is able to interface with ROS nodes AND is able to help us out with a GUI/debug tools IS HARD! Simulink acts as a glue between our hardware, voodoo blackbox, and our ideas.
 
-*** DONE Matlab/Simulink
+*** Matlab/Simulink
 :LOGBOOK:
 - State "DONE"       from              [2020-05-17 Sun 13:20]
 :END:
@@ -139,7 +136,10 @@ Not gonna write much here because I think everyone is familiar with it.
 
 Status: Installed
 
-*** TODO ROS
+*** ROS
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 14:30]
+:END:
 
 Robot Operating System (ROS) is a framework of tools, libraries, and software to aid in robot software development. It is a flexible system for programming robots and controlling robotic platforms. ROS was developed by an open-source collaborative community to help grow the world of robotics. Applications for working with hardware, robotic simulation models, path planning, localization and mapping, and many other algorithms are available. For an introduction to ROS, see the ROS Introduction on their website.
 
@@ -154,7 +154,7 @@ Both MATLAB and Simulink support the TCPROS transport layer (see TCPROS). The UD
 ROS Toolbox supports ROS Indigo and Hydro platforms, but your own ROS installation may have different message versions. If you would like to overwrite our current message catalog, you can utilize ROS Custom Message Support to generate new message definitions. For ROS 2, ROS Toolbox supports the Dashing Diademata platform.
 
 ** Control Scheme
-*** DONE Drone Finite State Machine
+*** Drone Finite State Machine
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 13:57]
 :END:
@@ -206,12 +206,7 @@ The SLAM algorithm is commputer intensive BUT once localization is done, it's pr
 So our first pass will be super slow to collect info.
 Then, we can use the state machine to switch between the Localize & Traverse states and make optimal use of information.
 
-*** DONE ORB-SLAM2
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
-:END:
-=======
-** TODO ORB-SLAM2
+*** ORB-SLAM2
 
 *Status: Needs review*
 
@@ -227,7 +222,7 @@ License: GPLv3
 ORB-SLAM2 is a real-time SLAM library for Monocular, Stereo and RGB-D cameras that computes the camera trajectory and a sparse 3D reconstruction (in the stereo and RGB-D case with true scale). It is able to detect loops and relocalize the camera in real time. We provide examples to run the SLAM system in the KITTI dataset as stereo or monocular, in the TUM dataset as RGB-D or monocular, and in the EuRoC dataset as stereo or monocular. We also provide a ROS node to process live monocular, stereo or RGB-D streams. The library can be compiled without ROS. ORB-SLAM2 provides a GUI to change between a SLAM Mode and Localization Mode, see section 9 of this document.
 #+END_QUOTE
 
-*** ROS Parameters
+**** ROS Parameters
 
 There are three types of parameters right now: static- and dynamic ros parameters and camera settings from the config file. The static parameters are send to the ROS parameter server at startup and are not supposed to change. They are set in the launch files which are located at ros/launch. The parameters are:
 
@@ -272,7 +267,10 @@ All nodes offer the possibility to save the map via the service node_type/save_m
 - ~/orb_slam2_mono/save_map~
 - ~/orb_slam2_stereo/save_map~
 
-*** TODO Unscented Kalman Filter
+*** Unscented Kalman Filter
+:LOGBOOK:
+- State "DONE"       from "TODO"       [2020-05-17 Sun 14:28]
+:END:
 
 *Status: Needs review*
 
@@ -284,92 +282,46 @@ This is what keeps the drone actually flying in the air.
 The ORB-SLAMv2 is really just a way to identify points
 
 * TODO Action items
+
 ** TODO Base Simulink Simulation
 Also need to look at the base model (and add the existing stuff to git repo)
-
 Some hard numbers instead of qualitative stuff.
 
+*** TODO Make comparison of models
 
+- ROS vs Simulink
+- ORB-SLAM vs other vSLAM models
+- Different Feature Detection inside vSLAM
+
+*** TODO Simulink Model in Gitlab Repo
+
+Assigned to: Vi Kumar
+- [ ] Add the base case to the gitlab repo for convenience.
+- [ ] Notify Vishnu when done.
 
 *** Debugging
 
 Useful link: https://www.mathworks.com/matlabcentral/answers/?term=parrot
 
+** TODO ORB-SLAM Simulink model
+SCHEDULED: <2020-05-17 Sun>
 
-*** TODO Make comparison of models
-- ROS vs Simulink
-- ORB-SLAM vs other vSLAM models
-- Different Feature Detection inside vSLAM
-
-** TODO Need to get real-life data for stuff
-
-=======
-** TODO Drone Finite State Machine
-
-#+begin_src plantuml :file drone-fsm.png
-@startuml
-scale 2
-
-title Drone Finite State Machine
-
-skinparam defaultTextAlignment center
-skinparam RectangleFontSize 20
-
-skinparam TitleFontStyle bold
-skinparam TitleFontColor #A19589
-
-' Define two colors for a gradient of the background
-' and use "-" to define that the gradient goes from top to bottom.
-skinparam BackgroundColor  #FFFFFF
-
-skinparam RectangleBackgroundColor #22A7E5
-
-[*] --> TakeOff
-TakeOff --> Localize
-Localize --> Plan
-Plan --> Traverse
-Traverse --> Localize
-Localize --> Land
-Land --> [*]
-
-TakeOff : Drone takes off
-Localize : Drone collects information w/ SLAM
-Plan : Drone calculates trajectory w/ SLAM output
-Traverse: Drone moves to selected point w/ Unscented Kalman Filter
-
-@enduml
-#+END_SRC
-
-#+RESULTS:
-[[file:drone-fsm.png]]
-
-So our drone needs a way to figure out what to do and how to do it.
-A really simple Finite State Machine is below. Should probably ask someone who knows what they're doing.
-
-The SLAM algorithm is commputer intensive BUT once localization is done, it's pretty fast.
-
-So our first pass will be super slow to collect info.
-Then, we can use the state machine to switch between the Localize & Traverse states and make optimal use of information.
-
-* TODO Action items
+Implement ORB-SLAM in Simulink (again, ughh).
 
 ** TODO Need to get real-life data for stuff
->>>>>>> simulink
 Need to get Dr Mehdi to send over a recording of sensor data from the drone. While we can't actually work with said drone thanks to the whole lockdown, having some raw data should allow us to make (somewhat rational) decisions about which filters and what parameters to use to analyze said data.
 
 Not a priority (yet) and I think Dr Mehdi is busy with exam stuff. Would recommend bugging him about it before our meeting on May 17.
 
-** TODO Need to copy equations of motion from hastily written notes to an actual file
+** TODO Equations of motion
+SCHEDULED: <2020-05-18 Mon>
 
 For the UKF because you need a proper statespace model
 
 *** Need some controlability analysis
+SCHEDULED: <2020-05-19 Tue>
 
 Mostly so that we know we're not missing out on some really useful info.
 
 Give Sheriff some equations to use the SVD analysis on
 Two birds with one stone - Controllability analysis as well as practice for Sheriff.
-=======
-*** Need to also add a real simple Simulink implementation of the statespace model you're using. Need some controlability analysis
-
-Mostly so that we know we're not missing out on some really useful info.

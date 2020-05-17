@@ -1,4 +1,4 @@
-% Created 2020-05-17 Sun 14:00
+% Created 2020-05-17 Sun 14:32
 % Intended LaTeX compiler: pdflatex
 \documentclass[unrestricted]{meetingnotesminutes}
                     \title{ {{{title}}} }
@@ -25,9 +25,8 @@
 
 \frontmatter
 
-\section{{\bfseries\sffamily TODO} Agenda}
-\label{sec:org41d2a2b}
-
+\section{Agenda}
+\label{sec:org300fc4e}
 \section*{Agenda}
 \begin{itemize}
   \item Housingkeeping \& Onboarding
@@ -35,16 +34,14 @@
   \item Action items
 \end{itemize}
 
-\tasklist
-
-\section{{\bfseries\sffamily DONE} Housekeeping \& Onboarding}
-\label{sec:org7baa450}
+\section{Housekeeping \& Onboarding}
+\label{sec:org635cd19}
 \subsection{New member!}
-\label{sec:org7146243}
+\label{sec:org669c370}
 Vishnu Sarathy is our new member! Introduce yourself!
 
 \subsection{Git Repository}
-\label{sec:org66f7293}
+\label{sec:org767152c}
 Get used to git because that's the easiest way for us to work together.
 Great documentation at \url{https://git-scm.com/doc}
 
@@ -58,20 +55,10 @@ git push origin master
 Our repo: https://gitlab.com/grokkingStuff/MathWorksMiniDrone
 \end{verbatim}
 
-\section{{\bfseries\sffamily TODO} Current Status of Project}
-\label{sec:org3cd4967}
-\subsection{{\bfseries\sffamily DONE} Mission Timeline}
-\label{sec:org8ac86e4}
-\begin{center}
-\begin{tabular}{ll}
-Task & Progress\\
-\hline
-Take off from a circular pad & TBD\\
-Follow a track laid on floor & In progress\\
-Land on circular end marker & TBD\\
-\end{tabular}
-\end{center}
-
+\section{Current Status of Project}
+\label{sec:org0dce987}
+\subsection{Mission Timeline}
+\label{sec:org0b276e1}
 \textbf{Key feedback}:
 
 \begin{itemize}
@@ -82,7 +69,8 @@ Work w/ Vishnu \& Sheriff on this ASAP
 \end{itemize}
 
 \subsubsection{Time consideration?}
-\label{sec:org70b5c40}
+\label{sec:orgd9eb607}
+Time consideration?
 Time considered only when the minidrone lands on the end marker.
 
 In order for the minidrone to be considered as having landed:
@@ -94,8 +82,8 @@ In order for the minidrone to be considered as having landed:
 \includegraphics[width=.9\linewidth]{./images/screenshot-01.png}
 \end{center}
 
-\subsection{{\bfseries\sffamily DONE} General Software Stack}
-\label{sec:org19747a7}
+\subsection{General Software Stack}
+\label{sec:org7bbea01}
 Work off ROS inside Simulink.
 
 \begin{itemize}
@@ -108,19 +96,19 @@ Plenty of existing models in ROS that are industry-tested. Also, it's usually be
 \end{itemize}
 The control logic is best expressed in Simulink because writing C code that has a decent state machine AND is able to interface with ROS nodes AND is able to help us out with a GUI/debug tools IS HARD! Simulink acts as a glue between our hardware, voodoo blackbox, and our ideas.
 
-\subsubsection{{\bfseries\sffamily DONE} Matlab/Simulink}
-\label{sec:org39da8e7}
+\subsubsection{Matlab/Simulink}
+\label{sec:orgbed147f}
 Not gonna write much here because I think everyone is familiar with it.
 
 Status: Installed
 
-\subsubsection{{\bfseries\sffamily DONE} ROS}
-\label{sec:org2dd02e3}
+\subsubsection{ROS}
+\label{sec:org42eb7d0}
 Robot Operating System (ROS) is a framework of tools, libraries, and software to aid in robot software development. It is a flexible system for programming robots and controlling robotic platforms. ROS was developed by an open-source collaborative community to help grow the world of robotics. Applications for working with hardware, robotic simulation models, path planning, localization and mapping, and many other algorithms are available. For an introduction to ROS, see the ROS Introduction on their website.
 
 \begin{enumerate}
 \item ROS Toolbox in Simulink
-\label{sec:org0dfa587}
+\label{sec:orgca215c6}
 
 \url{https://www.mathworks.com/help/ros/gs/robot-operating-system-ros.html}
 
@@ -132,9 +120,9 @@ ROS Toolbox supports ROS Indigo and Hydro platforms, but your own ROS installati
 \end{enumerate}
 
 \subsection{Control Scheme}
-\label{sec:org3b4bc7a}
-\subsubsection{{\bfseries\sffamily DONE} Drone Finite State Machine}
-\label{sec:orgb8e25df}
+\label{sec:org327d897}
+\subsubsection{Drone Finite State Machine}
+\label{sec:org59c9b2f}
 \begin{center}
 \includegraphics[width=.9\linewidth]{drone-fsm.png}
 \end{center}
@@ -149,8 +137,8 @@ The SLAM algorithm is commputer intensive BUT once localization is done, it's pr
 So our first pass will be super slow to collect info.
 Then, we can use the state machine to switch between the Localize \& Traverse states and make optimal use of information.
 
-\subsubsection{{\bfseries\sffamily TODO} ORB-SLAM2}
-\label{sec:org6f38a63}
+\subsubsection{ORB-SLAM2}
+\label{sec:orga5e2177}
 
 \textbf{Status: Needs review}
 
@@ -168,7 +156,7 @@ ORB-SLAM2 is a real-time SLAM library for Monocular, Stereo and RGB-D cameras th
 
 \begin{enumerate}
 \item ROS Parameters
-\label{sec:org01eca52}
+\label{sec:org944c892}
 
 There are three types of parameters right now: static- and dynamic ros parameters and camera settings from the config file. The static parameters are send to the ROS parameter server at startup and are not supposed to change. They are set in the launch files which are located at ros/launch. The parameters are:
 
@@ -193,19 +181,8 @@ Dynamic parameters can be changed at runtime. Either by updating them directly v
 
 Finally, the intrinsic camera calibration parameters along with some hyperparameters can be found in the specific yaml files in orb\textsubscript{slam2}/config.
 
-\item ROS Published topics
-\label{sec:orgd81a8f4}
-
-The following topics are being published and subscribed to by the nodes:
-
-\begin{itemize}
-\item All nodes publish (given the settings) a PointCloud2 containing all key points of the map.
-\item Live image from the camera containing the currently found key points and a status text.
-\item A tf from the pointcloud frame id to the camera frame id (the position).
-\end{itemize}
-
 \item ROS Subscribed topics
-\label{sec:orgd6ecd7b}
+\label{sec:org2778b5f}
 
 \begin{itemize}
 \item The \texttt{mono} node subscribes to \texttt{/camera/image\_raw} for the input image.
@@ -215,8 +192,19 @@ The following topics are being published and subscribed to by the nodes:
 \item \texttt{image\_right/image\_color\_rect} for corresponding images.
 \end{itemize}
 
+\item ROS Published topics
+\label{sec:org095f0d9}
+
+The following topics are being published and subscribed to by the nodes:
+
+\begin{itemize}
+\item All nodes publish (given the settings) a PointCloud2 containing all key points of the map.
+\item Live image from the camera containing the currently found key points and a status text.
+\item A tf from the pointcloud frame id to the camera frame id (the position).
+\end{itemize}
+
 \item ROS Services
-\label{sec:orgcba39ce}
+\label{sec:orgc107f8f}
 
 All nodes offer the possibility to save the map via the service node\textsubscript{type}/save\textsubscript{map}. So the save\textsubscript{map} services are:
 
@@ -227,9 +215,8 @@ All nodes offer the possibility to save the map via the service node\textsubscri
 \end{itemize}
 \end{enumerate}
 
-\subsubsection{{\bfseries\sffamily TODO} Unscented Kalman Filter}
-\label{sec:org0da9042}
-
+\subsubsection{Unscented Kalman Filter}
+\label{sec:org9c71e41}
 \textbf{Status: Needs review}
 
 Like an Extended Kalman Filter but more performant.
@@ -240,40 +227,51 @@ This is what keeps the drone actually flying in the air.
 The ORB-SLAMv2 is really just a way to identify points
 
 \section{{\bfseries\sffamily TODO} Action items}
-\label{sec:orgc3818eb}
+\label{sec:orgdf38218}
 
 \subsection{{\bfseries\sffamily TODO} Base Simulink Simulation}
-\label{sec:org1143c54}
+\label{sec:org31c6ec2}
 Also need to look at the base model (and add the existing stuff to git repo)
 
 Some hard numbers instead of qualitative stuff.
 
 \subsubsection{{\bfseries\sffamily TODO} Make comparison of models}
-\label{sec:org94cee3f}
-
+\label{sec:org4c5e95f}
 \begin{itemize}
 \item ROS vs Simulink
 \item ORB-SLAM vs other vSLAM models
 \item Different Feature Detection inside vSLAM
 \end{itemize}
 
-\subsection{{\bfseries\sffamily TODO} Need to get real-life data for stuff}
-\label{sec:orgd15efa7}
+\subsubsection{{\bfseries\sffamily TODO} Simulink Model in Gitlab Repo}
+\label{sec:org56feafc}
+\begin{itemize}
+\item[{$\square$}] Add the base case to the gitlab repo for convenience.
+\item[{$\square$}] Notify Vishnu when done.
+\end{itemize}
 
+\subsubsection{Debugging}
+\label{sec:org1bddf7b}
+
+Useful link: \url{https://www.mathworks.com/matlabcentral/answers/?term=parrot}
+
+
+\subsection{{\bfseries\sffamily TODO} ORB-SLAM Simulink model}
+\label{sec:org1afff8e}
+Implement ORB-SLAM in Simulink (again, ughh).
+
+\subsection{{\bfseries\sffamily TODO} Need to get real-life data for stuff}
+\label{sec:orgaa1723f}
 Need to get Dr Mehdi to send over a recording of sensor data from the drone. While we can't actually work with said drone thanks to the whole lockdown, having some raw data should allow us to make (somewhat rational) decisions about which filters and what parameters to use to analyze said data.
 
 Not a priority (yet) and I think Dr Mehdi is busy with exam stuff. Would recommend bugging him about it before our meeting on May 17.
 
-Dr Amber
-
-\subsection{{\bfseries\sffamily TODO} Need to copy equations of motion from hastily written notes to an actual file}
-\label{sec:orgf7387f1}
-
+\subsection{{\bfseries\sffamily TODO} Equations of motion}
+\label{sec:orga13cdb2}
 For the UKF because you need a proper statespace model
 
 \subsubsection{Need some controlability analysis}
-\label{sec:org798c3cd}
-
+\label{sec:org1fa39f7}
 Mostly so that we know we're not missing out on some really useful info.
 
 Give Sheriff some equations to use the SVD analysis on
