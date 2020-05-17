@@ -58,6 +58,8 @@
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
 :END:
+=======
+* TODO Agenda
 
 \section*{Agenda}
 \begin{itemize}
@@ -100,13 +102,6 @@ Our repo: https://gitlab.com/grokkingStuff/MathWorksMiniDrone
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 13:57]
 :END:
-
-| Task                         | Progress    |
-|------------------------------+-------------|
-| Take off from a circular pad | TBD         |
-| Follow a track laid on floor | In progress |
-| Land on circular end marker  | TBD         |
-
 *Key feedback*:
 
 - Test, test, test
@@ -115,6 +110,9 @@ Our repo: https://gitlab.com/grokkingStuff/MathWorksMiniDrone
   Work w/ Vishnu & Sheriff on this ASAP
 
 *** Time consideration?
+=======
+Time consideration?
+>>>>>>> simulink
 Time considered only when the minidrone lands on the end marker.
 
 In order for the minidrone to be considered as having landed:
@@ -122,10 +120,7 @@ In order for the minidrone to be considered as having landed:
  - Minidrone's bottom surface has to touch the floor.
 [[file:./images/screenshot-01.png]]
 
-** DONE General Software Stack
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 13:57]
-:END:
+** TODO General Software Stack
 
 Work off ROS inside Simulink.
 
@@ -144,10 +139,7 @@ Not gonna write much here because I think everyone is familiar with it.
 
 Status: Installed
 
-*** DONE ROS
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 13:57]
-:END:
+*** TODO ROS
 
 Robot Operating System (ROS) is a framework of tools, libraries, and software to aid in robot software development. It is a flexible system for programming robots and controlling robotic platforms. ROS was developed by an open-source collaborative community to help grow the world of robotics. Applications for working with hardware, robotic simulation models, path planning, localization and mapping, and many other algorithms are available. For an introduction to ROS, see the ROS Introduction on their website.
 
@@ -218,6 +210,8 @@ Then, we can use the state machine to switch between the Localize & Traverse sta
 :LOGBOOK:
 - State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
 :END:
+=======
+** TODO ORB-SLAM2
 
 *Status: Needs review*
 
@@ -233,7 +227,7 @@ License: GPLv3
 ORB-SLAM2 is a real-time SLAM library for Monocular, Stereo and RGB-D cameras that computes the camera trajectory and a sparse 3D reconstruction (in the stereo and RGB-D case with true scale). It is able to detect loops and relocalize the camera in real time. We provide examples to run the SLAM system in the KITTI dataset as stereo or monocular, in the TUM dataset as RGB-D or monocular, and in the EuRoC dataset as stereo or monocular. We also provide a ROS node to process live monocular, stereo or RGB-D streams. The library can be compiled without ROS. ORB-SLAM2 provides a GUI to change between a SLAM Mode and Localization Mode, see section 9 of this document.
 #+END_QUOTE
 
-**** ROS Parameters
+*** ROS Parameters
 
 There are three types of parameters right now: static- and dynamic ros parameters and camera settings from the config file. The static parameters are send to the ROS parameter server at startup and are not supposed to change. They are set in the launch files which are located at ros/launch. The parameters are:
 
@@ -254,14 +248,6 @@ Dynamic parameters can be changed at runtime. Either by updating them directly v
 
 Finally, the intrinsic camera calibration parameters along with some hyperparameters can be found in the specific yaml files in orb_slam2/config.
 
-**** ROS Published topics
-
-The following topics are being published and subscribed to by the nodes:
-
-- All nodes publish (given the settings) a PointCloud2 containing all key points of the map.
-- Live image from the camera containing the currently found key points and a status text.
-- A tf from the pointcloud frame id to the camera frame id (the position).
-
 **** ROS Subscribed topics
 
 - The ~mono~ node subscribes to ~/camera/image_raw~ for the input image.
@@ -269,6 +255,14 @@ The following topics are being published and subscribed to by the nodes:
 - ~/camera/depth_registered/image_raw~ for the depth information.
 - The stereo node subscribes to ~image_left/image_color_rect~ and
 - ~image_right/image_color_rect~ for corresponding images.
+
+**** ROS Published topics
+
+The following topics are being published and subscribed to by the nodes:
+
+- All nodes publish (given the settings) a PointCloud2 containing all key points of the map.
+- Live image from the camera containing the currently found key points and a status text.
+- A tf from the pointcloud frame id to the camera frame id (the position).
 
 **** ROS Services
 
@@ -278,10 +272,7 @@ All nodes offer the possibility to save the map via the service node_type/save_m
 - ~/orb_slam2_mono/save_map~
 - ~/orb_slam2_stereo/save_map~
 
-*** DONE Unscented Kalman Filter
-:LOGBOOK:
-- State "DONE"       from "TODO"       [2020-05-17 Sun 14:01]
-:END:
+*** TODO Unscented Kalman Filter
 
 *Status: Needs review*
 
@@ -312,11 +303,61 @@ Useful link: https://www.mathworks.com/matlabcentral/answers/?term=parrot
 
 ** TODO Need to get real-life data for stuff
 
+=======
+** TODO Drone Finite State Machine
+
+#+begin_src plantuml :file drone-fsm.png
+@startuml
+scale 2
+
+title Drone Finite State Machine
+
+skinparam defaultTextAlignment center
+skinparam RectangleFontSize 20
+
+skinparam TitleFontStyle bold
+skinparam TitleFontColor #A19589
+
+' Define two colors for a gradient of the background
+' and use "-" to define that the gradient goes from top to bottom.
+skinparam BackgroundColor  #FFFFFF
+
+skinparam RectangleBackgroundColor #22A7E5
+
+[*] --> TakeOff
+TakeOff --> Localize
+Localize --> Plan
+Plan --> Traverse
+Traverse --> Localize
+Localize --> Land
+Land --> [*]
+
+TakeOff : Drone takes off
+Localize : Drone collects information w/ SLAM
+Plan : Drone calculates trajectory w/ SLAM output
+Traverse: Drone moves to selected point w/ Unscented Kalman Filter
+
+@enduml
+#+END_SRC
+
+#+RESULTS:
+[[file:drone-fsm.png]]
+
+So our drone needs a way to figure out what to do and how to do it.
+A really simple Finite State Machine is below. Should probably ask someone who knows what they're doing.
+
+The SLAM algorithm is commputer intensive BUT once localization is done, it's pretty fast.
+
+So our first pass will be super slow to collect info.
+Then, we can use the state machine to switch between the Localize & Traverse states and make optimal use of information.
+
+* TODO Action items
+
+** TODO Need to get real-life data for stuff
+>>>>>>> simulink
 Need to get Dr Mehdi to send over a recording of sensor data from the drone. While we can't actually work with said drone thanks to the whole lockdown, having some raw data should allow us to make (somewhat rational) decisions about which filters and what parameters to use to analyze said data.
 
 Not a priority (yet) and I think Dr Mehdi is busy with exam stuff. Would recommend bugging him about it before our meeting on May 17.
-
-Dr Amber
 
 ** TODO Need to copy equations of motion from hastily written notes to an actual file
 
@@ -328,3 +369,7 @@ Mostly so that we know we're not missing out on some really useful info.
 
 Give Sheriff some equations to use the SVD analysis on
 Two birds with one stone - Controllability analysis as well as practice for Sheriff.
+=======
+*** Need to also add a real simple Simulink implementation of the statespace model you're using. Need some controlability analysis
+
+Mostly so that we know we're not missing out on some really useful info.
