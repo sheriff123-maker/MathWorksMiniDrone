@@ -1,6 +1,5 @@
 #+TITLE: Computer Vision Notes
 
-
 Loads of information over here - https://www.mathworks.com/products/computer-vision.html
 
 
@@ -54,6 +53,7 @@ The algorithm has three main parts: interest point detection, local neighborhood
 ** BRISK
 ** KAZE
 ** ORB
+
 Class implementing the ORB (oriented BRIEF) keypoint detector and descriptor extractor, described in [RRKB11]. The algorithm uses FAST in pyramids to detect stable keypoints, selects the strongest features using FAST or Harris response, finds their orientation using first-order moments and computes the descriptors using BRIEF (where the coordinates of random point pairs (or k-tuples) are rotated according to the measured orientation).
 
 [RRKB11]	Ethan Rublee, Vincent Rabaud, Kurt Konolige, Gary R. Bradski: ORB: An efficient alternative to SIFT or SURF. ICCV 2011: 2564-2571.
@@ -62,7 +62,6 @@ FREAK
 ** FREAK
 
 Class implementing the FREAK (Fast Retina Keypoint) keypoint descriptor, described in [AOV12]. The algorithm propose a novel keypoint descriptor inspired by the human visual system and more precisely the retina, coined Fast Retina Key- point (FREAK). A cascade of binary strings is computed by efficiently comparing image intensities over a retinal sampling pattern. FREAKs are in general faster to compute with lower memory load and also more robust than SIFT, SURF or BRISK. They are competitive alternatives to existing keypoints in particular for embedded applications.
-
 
 * vSLAM (specifically ORB-SLAM2)
 
@@ -73,7 +72,7 @@ Class implementing the FREAK (Fast Retina Keypoint) keypoint descriptor, describ
 Visual simultaneous localization and mapping (vSLAM), refers to the process of calculating the position and orientation of a camera with respect to its surroundings, while simultaneously mapping the environment. The process uses only visual inputs from the camera. Applications for vSLAM include augmented reality, robotics, and autonomous driving.
 #+END_QUOTE
 
-Slam algorithms are algorithms that simultaneously tracks the movement of the camera (usually mounted onto a robot/car/etc.) and create a point cloud map of the surroundings that they passed. They create a map of the surroundings and localize them self within this map. In particular, we'll be looking at monocular slam algorithms, where monocular means that they preform slam based on a rgb image sequence (video) created by 1 camera at each time-instance.
+Slam algorithms are algorithms that simultaneously tracks the movement of the camera (usually mounted onto a robot/car/etc.) and create a point cloud map of the surroundings that they passed. They create a map of the surroundings and localize them self within this map, which is particularly handy for mobile robots. In particular, we'll be looking at monocular slam algorithms, where monocular means that they preform slam based on a rgb image sequence (video) created by 1 camera at each time-instance.
 
 NOTE: Monocular slam has has one big characteristic which provides it with a big pro but also a big con, it is scale independent. It cannot estimate the scale of the scenery and thus the precieved scale of the scenery will drift. This often is attempted to be fixed by trying to detect scenery that you already have been (you have traveled in a loop) and then the scale-drift can be estimated and corrected. This does bring the big pro that the algorithms work for big outdoor sceneries, small indoor sceneries and for transitions between these two.
 
@@ -326,7 +325,7 @@ To generate ANSI/ISO C from the algorithms in this toolbox, use MATLAB Coder™,
 
 The Computer Vision Toolbox™ provides an OpenCV Interface C++ API and an OCR language data files support package. Use the API for integrating OpenCV C++ code into MATLAB®. You can also use this support package to build MEX-files that call OpenCV functions. The support package also contains graphics processing unit (GPU) support. The OCR Language Data support package contains pretrained language data files from the OCR Engine page, tesseract-ocr, to use with the ocr function.
 
-* Computer Calibration
+* Camera Calibration
 
 Camera calibration is the process of estimating parameters of the camera using images of a special calibration pattern.
 The parameters include camera intrinsics, distortion coefficients, and camera extrinsics.
@@ -335,3 +334,68 @@ The parameters include camera intrinsics, distortion coefficients, and camera ex
 Using the Computer Vision Toolbox™, you can perform dense 3-D reconstruction using a calibrated stereo pair of cameras.
 You can also reconstruct the scene using an uncalibrated stereo pair of cameras, up to unknown scale.
 Finally, you can compute a sparse 3-D reconstruction from multiple images, using a single-calibrated camera.
+
+* Useful papers?
+
+[1] Herbert Bay, Andreas Ess, Tinne Tuytelaars, and Luc Van Gool.
+Speeded-up robust features (surf). Comput. Vis. Image Underst.,
+110(3):346–359, June 2008.
+
+[2] Timothy A Davis, John R Gilbert, Stefan I Larimore, and Esmond G
+Ng. Algorithm 836: Colamd, a column approximate minimum degree
+ordering algorithm. ACM Transactions on Mathematical Software
+(TOMS), 30(3):377–380, 2004.
+
+[3] Andrew J Davison, Ian D Reid, Nicholas D Molton, and Olivier
+Stasse. Monoslam: Real-time single camera slam. IEEE transactions
+on pattern analysis and machine intelligence, 29(6):1052–1067, 2007.
+
+[4] Frank Dellaert and Michael Kaess. Square root sam: Simultaneous
+localization and mapping via square root information smoothing. The
+International Journal of Robotics Research, 25(12):1181–1203, 2006.
+
+[5] Dorian Gálvez-López and Juan D Tardos. Bags of binary words for fast
+place recognition in image sequences. IEEE Transactions on Robotics,
+28(5):1188–1197, 2012.
+
+[6] Andreas Geiger, Philip Lenz, and Raquel Urtasun. Are we ready for
+autonomous driving? the kitti vision benchmark suite. In Conference
+on Computer Vision and Pattern Recognition (CVPR), 2012.
+
+[7] Richard Hartley and Andrew Zisserman. Multiple view geometry in
+computer vision second edition. Cambridge University Press, 2000.
+
+[8] Michael Kaess, Ananth Ranganathan, and Frank Dellaert. isam:
+Incremental smoothing and mapping. IEEE Transactions on Robotics,
+24(6):1365–1378, 2008.
+
+[9] Georg Klein and David Murray. Parallel tracking and mapping for
+small ar workspaces. In Mixed and Augmented Reality, 2007. ISMAR
+2007. 6th IEEE and ACM International Symposium on, pages 225–
+234. IEEE, 2007.
+
+[10] Georg Klein and David Murray. Parallel tracking and mapping for
+small AR workspaces. In Proc. Sixth IEEE and ACM International
+Symposium on Mixed and Augmented Reality (ISMAR’07), Nara,
+Japan, November 2007.
+
+[11] Etienne Mouragnon, Maxime Lhuillier, Michel Dhome, Fabien
+Dekeyser, and Patrick Sayd. Real time localization and 3d recon-
+struction. In Computer Vision and Pattern Recognition, 2006 IEEE
+Computer Society Conference on, volume 1, pages 363–370. IEEE,
+2006.
+
+[12] Raul Mur-Artal, Jose Maria Martinez Montiel, and Juan D Tardos.
+Orb-slam: a versatile and accurate monocular slam system. IEEE
+Transactions on Robotics, 31(5):1147–1163, 2015.[13] Hauke Strasdat, Andrew J Davison, JM Martı̀nez Montiel, and Kurt
+Konolige. Double window optimisation for constant time visual slam.
+In Computer Vision (ICCV), 2011 IEEE International Conference on,
+pages 2352–2359. IEEE, 2011.
+
+[14] Hauke Strasdat, JMM Montiel, and Andrew J Davison. Scale drift-
+aware large scale monocular slam. Robotics: Science and Systems VI,
+2, 2010.
+
+[15] Bill Triggs, Philip F McLauchlan, Richard I Hartley, and Andrew W
+Fitzgibbon. Bundle adjustmenta modern synthesis. In International
+workshop on vision algorithms, pages 298–372. Springer, 1999.
