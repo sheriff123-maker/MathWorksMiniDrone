@@ -1,0 +1,17 @@
+#+TITLE: Control
+#+AUTHOR: Vi Kumar
+
+
+
+
+
+
+https://ros.org/reps/rep-0147.html
+
+https://docs.px4.io/master/en/advanced_config/tuning_the_ecl_ekf.html#external-vision-system
+
+
+https://github.com/PX4/ecl/blob/master/EKF/matlab/scripts/Inertial%20Nav%20EKF/GenerateNavFilterEquations.m
+
+
+#
