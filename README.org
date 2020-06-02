@@ -8,6 +8,24 @@ Addon Toolboxes to Install:
 
 
 
+* Onboarding
+
+** Mathworks OnRamp courses
+
+- Matlab OnRamp
+- Simulink OnRamp
+- Stateflow Onramp
+
+* Folder Structure
+
+As defined under Section B.4 (Submission) of the Competition guidelines.
+
+TL;DR - Don't mess with the original file and folder structure.
+
+All Simulink files must be added to the root directory.
+All additional files (like documentation) must be added to a directory that is NOT part of the original file and folder structure (make a new folder).
+
+
 * Parrot Mambo Drone Info
 Mostly information on what sensor information we have and as a way to document stuff.
 
