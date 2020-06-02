@@ -6,8 +6,6 @@ Addon Toolboxes to Install:
 3. Computer Vision
 4. Image Processing
 
-
-
 * Onboarding
 
 ** Mathworks OnRamp courses
@@ -15,6 +13,15 @@ Addon Toolboxes to Install:
 - Matlab OnRamp
 - Simulink OnRamp
 - Stateflow Onramp
+
+When you're done with the courses, go ahead and add your certificate to the ~team_information/onramp_certificates~ folder. Also, please add yourself to the table below!
+
+|                 | Matlab | Simulink | Stateflow |
+|-----------------+--------+----------+-----------|
+| Vi Kumar        |        |          |           |
+| Vishnu Sarathy  |        |          |           |
+| Sherif Abdullah |        |          |           |
+| Nidhija Pillai  |        |          |           |
 
 * Folder Structure
 
@@ -24,6 +31,40 @@ TL;DR - Don't mess with the original file and folder structure.
 
 All Simulink files must be added to the root directory.
 All additional files (like documentation) must be added to a directory that is NOT part of the original file and folder structure (make a new folder).
+
+Original folder structure
+
+- controller/
+  - flightControlSystem.slx
+- libraries/
+  - plantLibrary.slx
+  - sensorsLibrary.slx
+- linearAirframe/
+- mainModels/
+- nonlinearAirframe/
+- resources/
+- support/
+- tasks/
+- tests/
+- utilities/
+- work/
+- parrotMinidroneCompetition.prj
+
+** Submission
+
+Submission Checklist
+- Compress repository into an archive
+  - Acceptable formats are .zip, .rar & .tar.gz
+    I'd recommend using the .zip format because it's mistake-proof
+
+    #+BEGIN_SRC sh
+zip -r TeamName.zip ./
+    #+END_SRC
+
+- Name archive file in the format "<TeamName>"
+- Email archive to ~roboticsarena@mathworks.com~
+  - Subject line - "<TeamName> at <EventName> <EventName>"
+  - Use HeriotWatt email adress
 
 
 * Parrot Mambo Drone Info
@@ -105,3 +146,7 @@ Rotor #4 has the same rotation direction as rotor #2. It is located parallel to 
 *** SDK
 SDK: OS Linux. SDK available on Parrot.com
 We might find documentation useful, especially if the Simulink model neglects to mention something.
+
+* License
+
+All original works are under GPLv3 License. Pls refer ~LICENSE~
