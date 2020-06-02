@@ -1,6 +1,218 @@
-Look up this
-/home/grokkingstuff/Documents/MATLAB/SupportPackages/R2019b/toolbox/target/supportpackages/parrot
+* Coordinate Systems definition
 
+
+** Units
+
+Use SI units by default in all code - it's the most consistent international standard. SI units are maintained by Bureau International des Poids et Mesures. and I'd recommend Wikipedia for more info.
+
+#+CAPTION: Base Units
+| Quantity | Unit     |
+|----------+----------|
+| length   | meter    |
+| mass     | kilogram |
+| time     | second   |
+| current  | ampere   |
+
+SI defines seven base units and many derived units. If you are not using SI base units, you should use SI-derived units.
+
+#+CAPTION: Commonly used SI-derived units
+| Quantity    | Unit    |
+|-------------+---------|
+| angle       | radian  |
+| frequency   | hertz   |
+| force       | newton  |
+| power       | watt    |
+| voltage     | volt    |
+| temperature | celsius |
+| magnetism   | tesla   |
+
+** Coordinate Frame Conventions
+
+All coordinate frames should follow these conventions.
+http://www.ros.org/reps/rep-0103.html
+
+*** Chirality
+
+All systems are right handed. This means they comply with the right hand rule [4].
+
+*** Axis Orientation
+
+In relation to a body the standard is:
+
+| x | forward |
+| y | left    |
+| z | up      |
+
+For short-range Cartesian representations of geographic locations, use the east north up [5] (ENU) convention:
+
+| X | east  |
+| Y | north |
+| Z | up    |
+
+To avoid precision problems with large float32 values, it is recommended to choose a nearby origin such as your system's starting position.
+
+*** Suffix Frames
+
+In the case of cameras, there is often a second frame defined with a "_optical" suffix. This uses a slightly different convention:
+
+| z | forward |
+| x | right   |
+| y | down    |
+
+For outdoor systems where it is desirable to work under the north east down [6] (NED) convention, define an appropriately transformed secondary frame with the "_ned" suffix:
+
+| X | north |
+| Y | east  |
+| Z | down  |
+
+*** Rotation Representation
+
+There are many ways to represent rotations. The preferred order is listed below, along with rationale.
+
+1) quaternion
+   - Compact representation
+   - No singularities
+2) rotation matrix
+   - No singularities
+3) fixed axis roll, pitch, yaw about X, Y, Z axes respectively
+   - No ambiguity on order
+   - Used for angular velocities
+4) euler angles yaw, pitch, and roll about Z, Y, X axes respectively
+   - Euler angles are generally discouraged due to having 24 'valid' conventions with different domains using different conventions by default.
+
+NOTE: By the right hand rule, the yaw component of orientation increases as the child frame rotates counter-clockwise, and for geographic poses, yaw is zero when pointing east.
+
+This requires special mention only because it differs from a traditional compass bearing, which is zero when pointing north and increments clockwise. Hardware drivers should make the appropriate transformations before publishing standard ROS messages.
+
+
+
+
+**
+
+** Coordinate Frames
+We define 5 right-handed frames following standard ROS convention (https://www.ros.org/reps/rep-0105.html):
+
+
+| world         | ${W}$ |
+| odometry      | ${O}$ |
+| body          | ${B}$ |
+| camera        | ${C}$ |
+| VI sensor IMU | ${V}$ |
+
+- world ${W}$
+
+  The coordinate frame called map is a world fixed frame, with its Z-axis pointing upwards. The pose of a mobile platform, relative to the map frame, should not significantly drift over time. The map frame is not continuous, meaning the pose of a mobile platform in the map frame can change in discrete jumps at any time.
+
+  In a typical setup, a localization component constantly re-computes the robot pose in the map frame based on sensor observations, therefore eliminating drift, but causing discrete jumps when new sensor information arrives.
+
+  The map frame is useful as a long-term global reference, but discrete jumps in position estimators make it a poor reference frame for local sensing and acting.
+
+- odometry ${O}$
+
+  The coordinate frame ${O}$ is a world-fixed frame.
+  The pose of a mobile platform in the odom frame can drift over time, without any bounds. This drift makes the odom frame useless as a long-term global reference.
+  However, the pose of a robot in the odom frame is guaranteed to be continuous, meaning that the pose of a mobile platform in the odom frame always evolves in a smooth way, without discrete jumps.
+
+  In a typical setup the odom frame is computed based on an odometry source, such as wheel odometry or an inertial measurement unit.
+
+  The odom frame is useful as an accurate, short-term local reference, but drift makes it a poor frame for long-term reference.
+
+- body ${B}$
+
+- camera ${C}$
+
+- VI sensor IMU ${V}$
+
+* Sensor Calibration
+** Magnetometer Calibration
+
+https://www.mathworks.com/help/nav/ug/magnetometer-calibration.html
+
+** Gyrometer Caliration
+
+https://www.mathworks.com/help/nav/ug/remove-bias-from-angular-velocity-measurement.html
+
+** Camera Calibration
+
+Camera calibration is the process of estimating parameters of the camera using images of a special calibration pattern.
+The parameters include camera intrinsics, distortion coefficients, and camera extrinsics.
+3-D vision is the process of reconstructing a 3-D scene from two or more views of the scene.
+
+Using the Computer Vision Toolbox™, you can perform dense 3-D reconstruction using a calibrated stereo pair of cameras.
+You can also reconstruct the scene using an uncalibrated stereo pair of cameras, up to unknown scale.
+Finally, you can compute a sparse 3-D reconstruction from multiple images, using a single-calibrated camera.
+
+
+*** Single and Stereo Camera Calibration
+| detectCheckerboardPoints   | Detect checkerboard pattern in image                           |
+| generateCheckerboardPoints | Generate checkerboard corner locations                         |
+| undistortImage             | Correct image for lens distortion                              |
+| cameraPoseToExtrinsics     | Convert camera pose to extrinsics                              |
+| cameraMatrix               | Camera projection matrix                                       |
+| cameraParameters           | Object for storing camera parameters                           |
+| stereoParameters           | Object for storing stereo camera system parameters             |
+| disparityBM                | Compute disparity map using block matching                     |
+| disparitySGM               | Compute disparity map through semi-global matching             |
+| reconstructScene           | Reconstruct 3-D scene from disparity map                       |
+| rectifyStereoImages        | Rectify a pair of stereo images                                |
+| triangulate                | 3-D locations of undistorted matching points in stereo images  |
+| extrinsics                 | Compute location of calibrated camera                          |
+| extrinsicsToCameraPose     | Convert extrinsics to camera pose                              |
+| relativeCameraPose         | Compute relative rotation and translation between camera poses |
+| stereoAnaglyph             | Create red-cyan anaglyph from stereo pair of images            |
+| rotationMatrixToVector     | Convert 3-D rotation matrix to rotation vector                 |
+| rotationVectorToMatrix     | Convert 3-D rotation vector to rotation matrix                 |
+
+*** Stereo Vision
+| triangulate                       | 3-D locations of undistorted matching points in stereo images |
+| undistortImage                    | Correct image for lens distortion                             |
+| cameraMatrix                      | Camera projection matrix                                      |
+| disparityBM                       | Compute disparity map using block matching                    |
+| disparitySGM                      | Compute disparity map through semi-global matching            |
+| estimateUncalibratedRectification | Uncalibrated stereo rectification                             |
+| lineToBorderPoints                | Intersection points of lines in image and image border        |
+| rectifyStereoImages               | Rectify a pair of stereo images                               |
+| reconstructScene                  | Reconstruct 3-D scene from disparity map                      |
+| stereoParameters                  | Object for storing stereo camera system parameters            |
+| stereoAnaglyph                    | Create red-cyan anaglyph from stereo pair of images           |
+| rotationMatrixToVector            | Convert 3-D rotation matrix to rotation vector                |
+| rotationVectorToMatrix            | Convert 3-D rotation vector to rotation matrix                |
+
+
+* Estimators
+Some useful state estimators
+
+- EKF
+- Q Attitude estimator
+- LPE attitude estimator
+
+** EKF2
+EKF2 is an extended kalman filter estimating attitude, 3D position / velocity and wind states.
+
+- Disadvantages
+  - The ecl EKF is a complex algorithm that requires a good understanding of extended Kalman filter theory and its application to navigation problems to tune successfully. It is therefore more difficult for users that are not achieving good results to know what to change.
+  - The ecl EKF uses more RAM and flash space.
+  - The ecl EKF uses more logging space.
+
+- Advantage
+  - The ecl EKF is able to fuse data from sensors with different time delays and data rates in a mathematically consistent way which improves accuracy during dynamic maneuvers once time delay parameters are set correctly.
+  - The ecl EKF is capable of fusing a large range of different sensor types.
+  - The ecl EKF detects and reports statistically significant inconsistencies in sensor data, assisting with diagnosis of sensor errors.
+  - For fixed wing operation, the ecl EKF estimates wind speed with or without an airspeed sensor and is able to use the estimated wind in combination with airspeed measurements and sideslip assumptions to extend the dead-reckoning time available if GPS is lost in flight.
+  - The ecl EKF estimates 3-axis accelerometer bias which improves accuracy for tailsitters and other vehicles that experience large attitude changes between flight phases.
+  - The federated architecture (combined attitude and position/velocity estimation) means that attitude estimation benefits from all sensor measurements. This should provide the potential for improved attitude estimation if tuned correctly.
+
+
+
+
+** LPE position estimator -
+  The LPE position estimator is an extended kalman filter for 3D position and velocity states.
+
+** Q attitude estimator -
+The attitude Q estimator is a very simple, quaternion based complementary filter for attitude.
+
+
+* Deriving state equations
 https://dial.uclouvain.be/memoire/ucl/en/object/thesis%3A12954/datastream/PDF_01/view
 
 https://arxiv.org/pdf/1708.06652.pdf
@@ -33,7 +245,7 @@ M.grade(3).Fmt(3,r'\langle \mathbf{M} \rangle _3')
 #
 
 
-* Matlab derivation of navigation EKF
+** Matlab derivation of navigation EKF
 
 #+BEGIN_SRC octave
 
