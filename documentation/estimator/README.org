@@ -1,31 +1,6 @@
 * Coordinate Systems definition
 
 
-** Units
-
-Use SI units by default in all code - it's the most consistent international standard. SI units are maintained by Bureau International des Poids et Mesures. and I'd recommend Wikipedia for more info.
-
-#+CAPTION: Base Units
-| Quantity | Unit     |
-|----------+----------|
-| length   | meter    |
-| mass     | kilogram |
-| time     | second   |
-| current  | ampere   |
-
-SI defines seven base units and many derived units. If you are not using SI base units, you should use SI-derived units.
-
-#+CAPTION: Commonly used SI-derived units
-| Quantity    | Unit    |
-|-------------+---------|
-| angle       | radian  |
-| frequency   | hertz   |
-| force       | newton  |
-| power       | watt    |
-| voltage     | volt    |
-| temperature | celsius |
-| magnetism   | tesla   |
-
 ** Coordinate Frame Conventions
 
 All coordinate frames should follow these conventions.
@@ -51,6 +26,12 @@ For short-range Cartesian representations of geographic locations, use the east 
 
 To avoid precision problems with large float32 values, it is recommended to choose a nearby origin such as your system's starting position.
 
+For outdoor systems where it is desirable to work under the north east down [6] (NED) convention, define an appropriately transformed secondary frame with the "_ned" suffix:
+
+| X | north |
+| Y | east  |
+| Z | down  |
+
 *** Suffix Frames
 
 In the case of cameras, there is often a second frame defined with a "_optical" suffix. This uses a slightly different convention:
@@ -58,36 +39,6 @@ In the case of cameras, there is often a second frame defined with a "_optical" 
 | z | forward |
 | x | right   |
 | y | down    |
-
-For outdoor systems where it is desirable to work under the north east down [6] (NED) convention, define an appropriately transformed secondary frame with the "_ned" suffix:
-
-| X | north |
-| Y | east  |
-| Z | down  |
-
-*** Rotation Representation
-
-There are many ways to represent rotations. The preferred order is listed below, along with rationale.
-
-1) quaternion
-   - Compact representation
-   - No singularities
-2) rotation matrix
-   - No singularities
-3) fixed axis roll, pitch, yaw about X, Y, Z axes respectively
-   - No ambiguity on order
-   - Used for angular velocities
-4) euler angles yaw, pitch, and roll about Z, Y, X axes respectively
-   - Euler angles are generally discouraged due to having 24 'valid' conventions with different domains using different conventions by default.
-
-NOTE: By the right hand rule, the yaw component of orientation increases as the child frame rotates counter-clockwise, and for geographic poses, yaw is zero when pointing east.
-
-This requires special mention only because it differs from a traditional compass bearing, which is zero when pointing north and increments clockwise. Hardware drivers should make the appropriate transformations before publishing standard ROS messages.
-
-
-
-
-**
 
 ** Coordinate Frames
 We define 5 right-handed frames following standard ROS convention (https://www.ros.org/reps/rep-0105.html):
@@ -123,10 +74,233 @@ We define 5 right-handed frames following standard ROS convention (https://www.r
 
 - VI sensor IMU ${V}$
 
-* Sensor Calibration
-** Magnetometer Calibration
+** Rotation Representation
 
+#+BEGIN_SRC jupyter-python :session drone-kinematics
+import sympy as sp
+from galgebra.ga import Ga
+from sympy import symbols,sin,cos,sqrt
+from galgebra.printer import Eprint
+
+Eprint()
+
+x,y,z = sp.symbols('x y z')
+(o3d,ex,ey,ez) = Ga.build('e*x|y|z',g=[1,1,1])
+#+END_SRC
+
+
+#+BEGIN_SRC jupyter-python :session drone-kinematics
+print(o3d.mv('S', 'scalar'))
+print(o3d.mv('V', 'vector'))
+print(o3d.mv('B', 'bivector'))
+print(o3d.mv('I', 'pseudo'))
+
+#+END_SRC
+
+#+RESULTS:
+: S
+: V__x[0m*[0;34me_x[0m + V__y[0m*[0;34me_y[0m + V__z[0m*[0;34me_z[0m
+: B__x[0my[0m*[0;34me_x[0m^[0;34me_y[0m + B__x[0mz[0m*[0;34me_x[0m^[0;34me_z[0m + B__y[0mz[0m*[0;34me_y[0m^[0;34me_z[0m
+: I__x[0my[0mz[0m*[0;34me_x[0m^[0;34me_y[0m^[0;34me_z[0m
+
+
+*** Why quaternions?
+There are many ways to represent rotations. The preferred order is listed below, along with rationale.
+
+1) quaternion
+   - Compact representation
+   - No singularities
+2) rotation matrix
+   - No singularities
+3) fixed axis roll, pitch, yaw about X, Y, Z axes respectively
+   - No ambiguity on order
+   - Used for angular velocities
+4) euler angles yaw, pitch, and roll about Z, Y, X axes respectively
+   - Euler angles are generally discouraged due to having 24 'valid' conventions with different domains using different conventions by default.
+
+NOTE: By the right hand rule, the yaw component of orientation increases as the child frame rotates counter-clockwise, and for geographic poses, yaw is zero when pointing east.
+
+This requires special mention only because it differs from a traditional compass bearing, which is zero when pointing north and increments clockwise. Hardware drivers should make the appropriate transformations before publishing standard ROS messages.
+
+** Units
+
+Use SI units by default in all code - it's the most consistent international standard. SI units are maintained by Bureau International des Poids et Mesures. and I'd recommend Wikipedia for more info.
+
+#+CAPTION: Base Units
+| Quantity | Unit     |
+|----------+----------|
+| length   | meter    |
+| mass     | kilogram |
+| time     | second   |
+| current  | ampere   |
+
+SI defines seven base units and many derived units. If you are not using SI base units, you should use SI-derived units.
+
+#+CAPTION: Commonly used SI-derived units
+| Quantity    | Unit    |
+|-------------+---------|
+| angle       | radian  |
+| frequency   | hertz   |
+| force       | newton  |
+| power       | watt    |
+| voltage     | volt    |
+| temperature | celsius |
+| magnetism   | tesla   |
+
+* Estimators
+Some useful state estimators
+
+- EKF
+- Q Attitude estimator
+- LPE attitude estimator
+
+** EKF2
+EKF2 is an extended kalman filter estimating attitude, 3D position / velocity and wind states.
+
+- Disadvantages
+  - The ecl EKF is a complex algorithm that requires a good understanding of extended Kalman filter theory and its application to navigation problems to tune successfully. It is therefore more difficult for users that are not achieving good results to know what to change.
+  - The ecl EKF uses more RAM and flash space.
+  - The ecl EKF uses more logging space.
+
+- Advantage
+  - The ecl EKF is able to fuse data from sensors with different time delays and data rates in a mathematically consistent way which improves accuracy during dynamic maneuvers once time delay parameters are set correctly.
+  - The ecl EKF is capable of fusing a large range of different sensor types.
+  - The ecl EKF detects and reports statistically significant inconsistencies in sensor data, assisting with diagnosis of sensor errors.
+  - For fixed wing operation, the ecl EKF estimates wind speed with or without an airspeed sensor and is able to use the estimated wind in combination with airspeed measurements and sideslip assumptions to extend the dead-reckoning time available if GPS is lost in flight.
+  - The ecl EKF estimates 3-axis accelerometer bias which improves accuracy for tailsitters and other vehicles that experience large attitude changes between flight phases.
+  - The federated architecture (combined attitude and position/velocity estimation) means that attitude estimation benefits from all sensor measurements. This should provide the potential for improved attitude estimation if tuned correctly.
+
+** LPE position estimator -
+  The LPE position estimator is an extended kalman filter for 3D position and velocity states.
+
+** Q attitude estimator -
+The attitude Q estimator is a very simple, quaternion based complementary filter for attitude.
+* Kalman Filters
+
+The Kalman filter is essentially a set of mathematical equations that implement a two-stage estimator built from a predictor and corrector.
+
+Although the filter is originally developed for use in spacecraft navigation systems, it is now widely used in many other systems including satellite navigation systems, computer vision applications, and object tracking software
+
+A linear system can be described by the following equations
+
+State Space: $x_{k+1} = Ax_k + Bu_k + w_k$
+Output Equations: $y_{k} = Cx_k + v_k$
+
+- A, B, and C are constant matrices
+- k is time index
+- x is state of the equation
+- u is control input to the system
+- y is measured output
+- w is process noise with known covariance
+- v is measurement noise
+
+While we know that the $x$ vector contains all the information about the present state of the vector, we can't always observe all of them. What we can see is the $y$ vector - a subset of the states with some gaussian noise.
+
+The Kalman filter algorithm involves two stages: a prediction stage and a measurement update stage. The standard Kalman filter equations for the prediction stage are shown in the following.
+
+Kalman Gain: $K_k = P_kC^T{\( CP_kC^T + R \)}^{-1}$
+State Estimation: $x_{k+1} = (Ax_{k} + Bu_{k}) + K_k(y_k - Cx_k)$
+Estimation error covariance: $P_{k+1} = A(I-K_{k}C)P_{k}A^{T} + Q$
+
+- P is the estimation error covariance
+- R is the measurement noise covariance
+- K is the Kalman gain
+- Q is the process noise covariance
+
+The state estimation equation consists of two terms:
+- Prediction term ($Ax_{k} + Bu_{k}$)
+  The first term is the prediction term, which is used to derive the state estimate at time k+1. This value would be the state estimate if the measurement is unavailable.
+- Correction term ($K_{k}\(y_{k} - Cx_{k}\)$)
+  The second term is the correction term, representing the amount by which to correct the updated state estimate due to the available measurement.
+
+
+* Kalman Statespace Model
+[[file:./images/screenshot-05.png]]
+
+
+** States
+
+[[file:./images/screenshot-04.png]]
+
+** COMMENT AHRS kinematic model
+
+The Euler angles describe the aircraft body-axis orientation in north, east, and down coordinates.
+That means in longitudinal, lateral and normal coordinates, with respect to the local tangent plane to the Earth and true north.
+Here \theta is the pitch angle, \phi the roll  angle  and \psi is the yaw angle  according to Figure 2.
+The angular velocity vector expressed in body frame is P for  the  roll  rate, Q is  the  pitch  rate  and R is  the  yaw rate; and it is related to the Earth frame by the transformation given by the kinematics equation (1).
+
+SymPy mechanics module
+
+#+BEGIN_SRC jupyter-python :session kinematic_model
+import sympy as sp
+from sympy.abc import theta, psi, phi
+from sympy.physics.mechanics import dynamicsymbols
+from sympy.physics.vector import ReferenceFrame, CoordinateSym
+
+# Global Time coordinate
+t = sp.Symbol('t')
+B = ReferenceFrame('$B$') # Body frame
+E = ReferenceFrame('$E$') # Earth frame
+
+
+# Defined in body frame
+roll_rate_b, pitch_rate_b, yaw_rate_b = dynamicsymbols("P Q R", real=True)
+
+# Euler angles defined in earth frame
+roll_angle_e = dynamicsymbols("$\phi$", real=True)
+pitch_angle_e = dynamicsymbols("$\theta$", real=True)
+yaw_angle_e = dynamicsymbols("$\psi$", real=True)
+dt_roll_angle_e = roll_angle_e.diff(t)
+dt_pitch_angle_e = pitch_angle_e.diff(t)
+dt_yaw_angle_e = yaw_angle_e.diff(t)
+
+
+
+angular_velocity = sp.Matrix([[roll_rate_b],
+                              [pitch_rate_b],
+                              [yaw_rate_b]])
+dt_euler = sp.Matrix([[dt_roll_rate_e],
+                      [dt_pitch_rate_e],
+                      [dt_yaw_rate_e]])
+
+kinematics_transformation_matrix = sp.Matrix([[1,
+                                               sp.tan(pitch_angle_e)*sp.sin(roll_angle_e),
+                                               sp.tan(pitch_angle_e)*sp.sin(roll_angle_e)],
+                                              [0, sp.cos(roll_angle_e), -sp.sin(roll_angle_e)],
+                                              [0,
+                                               sp.sin(roll_angle_e)/sp.cos(pitch_angle_e),
+                                               sp.cos(roll_angle_e)/sp.cos(pitch_angle_e)]])
+
+kinematics_transformation_matrix*angular_velocity - dt_euler
+#+END_SRC
+
+#+RESULTS:
+:RESULTS:
+# [goto error]
+:
+: AttributeErrorTraceback (most recent call last)
+: <ipython-input-2-028009470547> in <module>
+:      14 yaw_angle_e = dynamicsymbols("$\psi$", real=True)
+:      15 dt_roll_angle_e = roll_angle_e.diff(t)
+: ---> 16 dt_pitch_angle_e = pitch_angle_e.diff(t)
+:      17 dt_yaw_angle_e = yaw_angle_e.diff(t)
+:      18
+:
+: AttributeError: 'list' object has no attribute 'diff'
+:END:
+
+* Sensor Calibration
+
+[[file:./images/screenshot-03.png]]
+
+** Accelerometer Calibration
+Low pass filter
+
+The accelerometer can determine the pitch and roll of the body by measuring the gravitational acceleration during static or quasi-static conditions
+
+** Magnetometer Calibration
 https://www.mathworks.com/help/nav/ug/magnetometer-calibration.html
+Ellipse Hypothesis Compensation
 
 ** Gyrometer Caliration
 
@@ -177,40 +351,6 @@ Finally, you can compute a sparse 3-D reconstruction from multiple images, using
 | stereoAnaglyph                    | Create red-cyan anaglyph from stereo pair of images           |
 | rotationMatrixToVector            | Convert 3-D rotation matrix to rotation vector                |
 | rotationVectorToMatrix            | Convert 3-D rotation vector to rotation matrix                |
-
-
-* Estimators
-Some useful state estimators
-
-- EKF
-- Q Attitude estimator
-- LPE attitude estimator
-
-** EKF2
-EKF2 is an extended kalman filter estimating attitude, 3D position / velocity and wind states.
-
-- Disadvantages
-  - The ecl EKF is a complex algorithm that requires a good understanding of extended Kalman filter theory and its application to navigation problems to tune successfully. It is therefore more difficult for users that are not achieving good results to know what to change.
-  - The ecl EKF uses more RAM and flash space.
-  - The ecl EKF uses more logging space.
-
-- Advantage
-  - The ecl EKF is able to fuse data from sensors with different time delays and data rates in a mathematically consistent way which improves accuracy during dynamic maneuvers once time delay parameters are set correctly.
-  - The ecl EKF is capable of fusing a large range of different sensor types.
-  - The ecl EKF detects and reports statistically significant inconsistencies in sensor data, assisting with diagnosis of sensor errors.
-  - For fixed wing operation, the ecl EKF estimates wind speed with or without an airspeed sensor and is able to use the estimated wind in combination with airspeed measurements and sideslip assumptions to extend the dead-reckoning time available if GPS is lost in flight.
-  - The ecl EKF estimates 3-axis accelerometer bias which improves accuracy for tailsitters and other vehicles that experience large attitude changes between flight phases.
-  - The federated architecture (combined attitude and position/velocity estimation) means that attitude estimation benefits from all sensor measurements. This should provide the potential for improved attitude estimation if tuned correctly.
-
-
-
-
-** LPE position estimator -
-  The LPE position estimator is an extended kalman filter for 3D position and velocity states.
-
-** Q attitude estimator -
-The attitude Q estimator is a very simple, quaternion based complementary filter for attitude.
-
 
 * Deriving state equations
 https://dial.uclouvain.be/memoire/ucl/en/object/thesis%3A12954/datastream/PDF_01/view
@@ -814,3 +954,11 @@ ConvertToC(nStates); % convert Matlab expressions to C code expressions
 ConvertCtoC(nStates); % convert covariance matrix expressions from array to matrix syntax
 
 #+END_SRC
+* Environment
+
+Consists of:
+ - AtmosphereBus
+ - Gravity_ned
+ - MagneticField
+
+[[file:./images/screenshot-01.png]]

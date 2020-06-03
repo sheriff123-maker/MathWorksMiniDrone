@@ -66,7 +66,6 @@ zip -r TeamName.zip ./
   - Subject line - "<TeamName> at <EventName> <EventName>"
   - Use HeriotWatt email adress
 
-
 * Parrot Mambo Drone Info
 Mostly information on what sensor information we have and as a way to document stuff.
 
