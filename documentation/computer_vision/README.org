@@ -281,3 +281,15 @@ A subgraph of covisibility graph containing only edges with high weight, i.e. mo
 
 - Recognition Database
 A database used to recognize whether a place has been visited in the past. The database stores the visual word-to-image mapping based on the input bag of features. It is used to search for an image that is visually similar to a query image.
+
+
+
+
+* Hough Transform
+
+
+#+BEGIN_SRC jupyter-python :session drone-kinematics
+
+
+
+#+END_SRC
