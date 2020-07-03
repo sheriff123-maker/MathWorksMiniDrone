@@ -1,5 +1,5 @@
 %% Command Vars
-% Copyright 2017 The MathWorks, Inc.
+% Copyright 2017-2018 The MathWorks, Inc.
 
 % Yaw Command
 Command.yawStepAmplitude = 0;
